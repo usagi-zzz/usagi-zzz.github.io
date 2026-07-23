@@ -3316,7 +3316,7 @@ const I18N = {
         op1: "……作戰區域確認完畢，這裡就是目標設施。",
         op2: "通訊狀態良好——那麼，開始突入！",
         clearTitle: "任務完成", clearTimeLb: "通關時間", clearCont: "繼續", clearNew: "新紀錄！", clearContHint: "傳送回起始重生點，可再次挑戰首領",
-        mapTitle: "全域地圖", mapClose: "拖曳平移・滾輪縮放・× / M / Esc 關閉", legCp: "存檔點", legKey: "鑰匙", legElev: "電梯", legMov: "移動平台", legBoss: "首領", legYou: "目前位置", bossName: "尾刃環奈", narrator: "旁白" },
+        mapTitle: "全域地圖", mapClose: "拖曳平移・滾輪縮放・× / M / Esc 關閉", legCp: "存檔點", legKey: "鑰匙", legElev: "電梯", legMov: "移動平台", legBoss: "首領", legYou: "目前位置", bossName: "七度雪乃", narrator: "旁白" },
   en: { title: "We Were RABBITs!", sub: "A Blue Archive fan pixel action game", newGame: "New Game", cont: "Continue",
         settings: "Settings", gallery: "Asset Gallery", back: "Back", volume: "Volume", language: "Language",
         confirmNew: "Clear local progress and start a new game? (speedrun record kept)",
@@ -3330,7 +3330,7 @@ const I18N = {
         op1: "...Operation area confirmed. This is the target facility.",
         op2: "Comms are green — commencing insertion!",
         clearTitle: "MISSION COMPLETE", clearTimeLb: "Clear Time", clearCont: "Continue", clearNew: "New Record!", clearContHint: "Teleport to the first checkpoint and challenge the boss again",
-        mapTitle: "WORLD MAP", mapClose: "Drag to pan · wheel to zoom · × / M / Esc to close", legCp: "Checkpoint", legKey: "Key", legElev: "Elevator", legMov: "Platform", legBoss: "Boss", legYou: "You", bossName: "Kanna", narrator: "Narrator" },
+        mapTitle: "WORLD MAP", mapClose: "Drag to pan · wheel to zoom · × / M / Esc to close", legCp: "Checkpoint", legKey: "Key", legElev: "Elevator", legMov: "Platform", legBoss: "Boss", legYou: "You", bossName: "Yukino", narrator: "Narrator" },
   ja: { title: "We Were RABBITs!", sub: "ブルーアーカイブ二次創作ピクセルアクション", newGame: "ニューゲーム", cont: "つづきから",
         settings: "設定", gallery: "素材図鑑", back: "戻る", volume: "音量", language: "言語 Language",
         confirmNew: "ローカルの進行データを消去して新しく始めますか？（タイム記録は保持）",
@@ -3344,7 +3344,7 @@ const I18N = {
         op1: "……作戦区域、確認完了。ここが目標施設ね。",
         op2: "通信状態良好——それじゃ、突入開始！",
         clearTitle: "任務完了", clearTimeLb: "クリアタイム", clearCont: "つづける", clearNew: "新記録！", clearContHint: "最初のセーブポイントへ戻り、ボスに再挑戦できます",
-        mapTitle: "全体マップ", mapClose: "ドラッグで移動・ホイールで拡縮・× / M / Esc で閉じる", legCp: "セーブ", legKey: "鍵", legElev: "エレベーター", legMov: "移動足場", legBoss: "ボス", legYou: "現在地", bossName: "尾刃カンナ", narrator: "ナレーション" },
+        mapTitle: "全体マップ", mapClose: "ドラッグで移動・ホイールで拡縮・× / M / Esc で閉じる", legCp: "セーブ", legKey: "鍵", legElev: "エレベーター", legMov: "移動足場", legBoss: "ボス", legYou: "現在地", bossName: "七度ユキノ", narrator: "ナレーション" },
   ko: { title: "We Were RABBITs!", sub: "블루 아카이브 팬 픽셀 액션", newGame: "새 게임", cont: "이어하기",
         settings: "설정", gallery: "소재 도감", back: "뒤로", volume: "볼륨", language: "언어 Language",
         confirmNew: "로컬 진행 데이터를 삭제하고 새로 시작할까요? (스피드런 기록 유지)",
@@ -3358,7 +3358,7 @@ const I18N = {
         op1: "...작전 구역 확인 완료. 여기가 목표 시설이야.",
         op2: "통신 상태 양호—— 그럼, 돌입 개시!",
         clearTitle: "임무 완료", clearTimeLb: "클리어 타임", clearCont: "계속", clearNew: "신기록!", clearContHint: "첫 세이브 포인트로 이동해 보스에 재도전할 수 있습니다",
-        mapTitle: "전체 지도", mapClose: "드래그 이동・휠 확대/축소・× / M / Esc 닫기", legCp: "세이브", legKey: "열쇠", legElev: "엘리베이터", legMov: "이동 발판", legBoss: "보스", legYou: "현재 위치", bossName: "칸나", narrator: "내레이션" },
+        mapTitle: "전체 지도", mapClose: "드래그 이동・휠 확대/축소・× / M / Esc 닫기", legCp: "세이브", legKey: "열쇠", legElev: "엘리베이터", legMov: "이동 발판", legBoss: "보스", legYou: "현재 위치", bossName: "유키노", narrator: "내레이션" },
 };
 function T(k) { return (I18N[LANG] && I18N[LANG][k]) || I18N.zh[k] || k; }
 function setLang(l) {
@@ -3462,7 +3462,7 @@ function buildGallery() {   // 蒐集全角色（分類）：造型 / 支援 / �
   for (const k in ALLY_KINDS) if (ALLY_KINDS[k].anims && Object.keys(ALLY_KINDS[k].anims).length) list.push({ cat: "支援", label: allyNames[k] || k, anims: ALLY_KINDS[k].anims, fw: ALLY_KINDS[k].fw, fh: ALLY_KINDS[k].fh });
   const enemyNames = { pmc: "PMC 傭兵", pmc2: "PMC 精銳", sgtrooper: "霰彈兵", shield: "盾牌兵", turret: "自動砲台", rocket: "火箭兵", grenadier: "手雷兵" };
   for (const k in ENEMY_KINDS) if (ENEMY_KINDS[k].anims && Object.keys(ENEMY_KINDS[k].anims).length) list.push({ cat: "敵方", label: enemyNames[k] || k, anims: ENEMY_KINDS[k].anims, fw: ENEMY_KINDS[k].fw, fh: ENEMY_KINDS[k].fh });
-  list.push({ cat: "首領", label: T("bossName"), anims: BOSS_ANIMS, fw: BOSS_FW, fh: BOSS_FH });   // 尾刃環奈（台服官方譯名）
+  list.push({ cat: "首領", label: T("bossName"), anims: BOSS_ANIMS, fw: BOSS_FW, fh: BOSS_FH });   // 七度雪乃（FOX 小隊長 FOX1，台服官方譯名）
   return list;
 }
 let galScroll = 0, galMaxScroll = 0, galPlaying = true, galManualFrame = 0, galSheet = false;
