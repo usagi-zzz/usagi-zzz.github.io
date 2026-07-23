@@ -1,0 +1,40 @@
+{
+ "run": {
+  "file": "run.png",
+  "frameW": 240,
+  "frameH": 230,
+  "count": 12,
+  "fps": 11,
+  "loop": true
+ },
+ "idle": {
+  "file": "idle.png",
+  "frameW": 240,
+  "frameH": 230,
+  "count": 12,
+  "fps": 10,
+  "loop": true
+ },
+ "shoot": {
+  "file": "shoot.png",
+  "frameW": 240,
+  "frameH": 230,
+  "count": 12,
+  "fps": 12,
+  "loop": true
+ },
+ "death": {
+  "file": "death.png",
+  "frameW": 240,
+  "frameH": 230,
+  "count": 12,
+  "fps": 14,
+  "loop": false
+ },
+ "_muzzle_shoot": {
+  "fx": 0.7875,
+  "fy": 0.2976
+ },
+ "_feetRatio": 0.9358,
+ "_anchorX": 0.5344
+}

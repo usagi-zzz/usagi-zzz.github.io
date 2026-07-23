@@ -1,0 +1,32 @@
+{
+ "idle": {
+  "file": "idle.png",
+  "frameW": 240,
+  "frameH": 314,
+  "count": 12,
+  "fps": 10,
+  "loop": true
+ },
+ "shoot": {
+  "file": "shoot.png",
+  "frameW": 240,
+  "frameH": 314,
+  "count": 12,
+  "fps": 12,
+  "loop": true
+ },
+ "run": {
+  "file": "run.png",
+  "frameW": 240,
+  "frameH": 314,
+  "count": 12,
+  "fps": 10,
+  "loop": true
+ },
+ "_muzzle_shoot": {
+  "fx": 0.9809,
+  "fy": 0.3157
+ },
+ "_feetRatio": 0.991,
+ "_anchorX": 0.433
+}

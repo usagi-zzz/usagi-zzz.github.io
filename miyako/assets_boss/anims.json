@@ -1,0 +1,52 @@
+{
+ "run": {
+  "file": "run.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 11,
+  "fps": 12,
+  "loop": true
+ },
+ "shoot": {
+  "file": "shoot.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 12,
+  "fps": 12,
+  "loop": true
+ },
+ "crouch_shoot": {
+  "file": "crouch_shoot.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 12,
+  "fps": 12,
+  "loop": true
+ },
+ "rise": {
+  "file": "rise.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 5,
+  "fps": 20,
+  "loop": false
+ },
+ "fall": {
+  "file": "fall.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 3,
+  "fps": 12,
+  "loop": false
+ },
+ "land": {
+  "file": "land.png",
+  "frameW": 240,
+  "frameH": 315,
+  "count": 4,
+  "fps": 20,
+  "loop": false
+ },
+ "_feetRatio": 0.9889,
+ "_anchorX": 0.4422
+}

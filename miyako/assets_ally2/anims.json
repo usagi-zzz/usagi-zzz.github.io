@@ -1,0 +1,28 @@
+{
+ "guard": {
+  "file": "guard.png",
+  "frameW": 240,
+  "frameH": 319,
+  "count": 22,
+  "fps": 10,
+  "loop": true
+ },
+ "dizzy": {
+  "file": "dizzy.png",
+  "frameW": 240,
+  "frameH": 319,
+  "count": 12,
+  "fps": 7,
+  "loop": true
+ },
+ "run": {
+  "file": "run.png",
+  "frameW": 240,
+  "frameH": 319,
+  "count": 12,
+  "fps": 14,
+  "loop": true
+ },
+ "_feetRatio": 0.9905,
+ "_anchorX": 0.5841
+}

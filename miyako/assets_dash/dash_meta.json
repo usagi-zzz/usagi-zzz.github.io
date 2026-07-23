@@ -1,0 +1,44 @@
+{
+ "default": {
+  "fw": 240,
+  "fh": 232,
+  "count": 5,
+  "anchor": 0.5292,
+  "feet": 0.9871
+ },
+ "swim": {
+  "fw": 240,
+  "fh": 254,
+  "count": 5,
+  "anchor": 0.4813,
+  "feet": 0.937
+ },
+ "shiroko": {
+  "fw": 240,
+  "fh": 243,
+  "count": 5,
+  "anchor": 0.4938,
+  "feet": 0.9588
+ },
+ "mika": {
+  "fw": 240,
+  "fh": 260,
+  "count": 5,
+  "anchor": 0.4667,
+  "feet": 0.9385
+ },
+ "momoi": {
+  "fw": 240,
+  "fh": 252,
+  "count": 5,
+  "anchor": 0.4646,
+  "feet": 0.9722
+ },
+ "yuuka": {
+  "fw": 240,
+  "fh": 255,
+  "count": 5,
+  "anchor": 0.5271,
+  "feet": 0.9922
+ }
+}

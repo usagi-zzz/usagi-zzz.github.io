@@ -1,0 +1,24 @@
+{
+ "shoot": {
+  "file": "shoot.png",
+  "frameW": 240,
+  "frameH": 126,
+  "count": 12,
+  "fps": 12,
+  "loop": true
+ },
+ "death": {
+  "file": "death.png",
+  "frameW": 240,
+  "frameH": 126,
+  "count": 12,
+  "fps": 14,
+  "loop": false
+ },
+ "_muzzle_shoot": {
+  "fx": 0.7889,
+  "fy": 0.2763
+ },
+ "_feetRatio": 0.9622,
+ "_anchorX": 0.4528
+}

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>宮子地圖編輯器 Pro</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1016;--surface:#151d26;--surface2:#202b37;--surface3:#2a3745;--border:#344658;--text:#f2f5f8;--muted:#9eb0c0;--accent:#35c58a;--accent2:#72e8b7;--focus:#ffd166;--danger:#ff6b6b;--bar-h:64px;--side-w:224px}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font:15px/1.45 Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:0}button,input,select{font:inherit;letter-spacing:0}button{min-height:36px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:background .14s,border-color .14s,box-shadow .14s}button:hover{background:var(--surface3);border-color:#60758b}button:active{transform:translateY(1px)}button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:3px solid var(--focus);outline-offset:2px}button.on,button[aria-pressed=true]{color:#effff8;background:#14513e;border-color:var(--accent2);box-shadow:inset 0 0 0 1px var(--accent),0 0 16px rgb(53 197 138 / 10%)}button.warn{color:#fff;background:#632e38;border-color:#9a4858}button.warn:hover{background:#793744;border-color:var(--danger)}button:disabled{opacity:.42;cursor:not-allowed}kbd{display:inline-grid;place-items:center;min-width:22px;height:21px;padding:0 5px;color:#eaf0f6;background:#111821;border:1px solid #526478;border-bottom-width:2px;border-radius:4px;font:600 11px/1 system-ui}
+#bar{position:fixed;z-index:30;inset:0 0 auto;height:var(--bar-h);display:flex;align-items:center;gap:12px;padding:0 14px;background:linear-gradient(180deg,#19232e,#141c25);border-bottom:1px solid var(--border);box-shadow:0 5px 18px rgb(0 0 0 / 20%)}.brand{flex:none;display:flex;align-items:center;gap:10px;padding-right:16px}.brand-mark{width:34px;height:34px;display:grid;place-items:center;color:#092117;background:linear-gradient(145deg,var(--accent2),var(--accent));border-radius:9px;box-shadow:0 5px 16px rgb(53 197 138 / 20%);font-weight:900}.brand-copy{display:grid;line-height:1.12;white-space:nowrap}.brand-copy strong{font-size:15px}.brand-copy small{margin-top:3px;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}.top-actions{min-width:0;margin-left:auto;display:flex;align-items:center;gap:7px}.top-actions button{min-height:38px}.action-divider{width:1px;height:26px;margin:0 2px;background:var(--border)}.icon-button{width:38px;min-width:38px;padding:0!important;font-size:19px}
+#toolbox{position:fixed;z-index:22;left:0;top:var(--bar-h);bottom:34px;width:var(--side-w);overflow-y:auto;overscroll-behavior:contain;padding:14px 12px 20px;background:linear-gradient(90deg,#141c25,#17212b);border-right:1px solid var(--border);scrollbar-width:thin;scrollbar-color:#4b6074 transparent}.tool-group{padding:0 0 14px;margin:0 0 14px;border-bottom:1px solid var(--border)}.tool-group:last-child{margin-bottom:0;border-bottom:0}.tool-group-label{display:flex;align-items:center;gap:8px;margin:0 2px 9px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.tool-group-label::after{content:"";height:1px;flex:1;background:#2c3b49}.tool-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tool-buttons button{min-width:0;width:100%;min-height:42px;padding:7px 6px;text-align:left;overflow:hidden;text-overflow:ellipsis}.tool-buttons button[data-mode]::before{content:attr(data-icon);display:inline-block;width:20px;margin-right:3px;color:var(--accent2);font-weight:900;text-align:center}.tool-buttons button.on::before{color:#fff}.tool-buttons .wide{grid-column:1/-1;text-align:center}
+#cv{position:absolute;left:var(--side-w);top:var(--bar-h);right:0;bottom:34px;cursor:grab;background:radial-gradient(circle at 50% 10%,#121b25,var(--bg) 58%)}#props{position:fixed;z-index:24;right:14px;top:calc(var(--bar-h) + 14px);width:min(310px,calc(100vw - var(--side-w) - 28px));max-height:calc(100vh - var(--bar-h) - 62px);overflow:auto;padding:15px;display:none;color:var(--text);background:rgb(21 29 38 / 97%);border:1px solid #506174;border-radius:10px;box-shadow:0 16px 46px rgb(0 0 0 / 42%);backdrop-filter:blur(10px)}#props h3{margin:0 0 12px;padding-bottom:10px;color:var(--accent2);border-bottom:1px solid var(--border);font-size:15px;line-height:1.35}#props label{display:grid;grid-template-columns:minmax(72px,.8fr) minmax(120px,1.2fr);align-items:center;gap:10px;margin:8px 0;color:var(--muted)}#props input,#props select{width:100%;min-height:36px;padding:5px 8px;color:var(--text);background:#0d141c;border:1px solid var(--border);border-radius:6px}#props .scrub{color:#7fd7b2!important;cursor:ew-resize}#props .del{width:100%;margin-top:10px;color:#fff;background:#632e38;border-color:#9a4858}
+#statusbar{position:fixed;z-index:25;left:var(--side-w);right:0;bottom:0;height:34px;display:flex;align-items:center;gap:18px;padding:0 12px;color:var(--muted);background:#090e13;border-top:1px solid var(--border);font-size:12px}#status{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#modeStatus{color:var(--accent2);font-weight:800;white-space:nowrap}#saveStatus{margin-left:auto;white-space:nowrap}#helpB{flex:none;min-height:27px;height:27px;padding:2px 8px}
+.overlay{position:fixed;z-index:100;inset:0;display:none;place-items:start center;padding:min(9vh,68px) 16px 40px;background:rgb(3 7 11 / 78%);overflow:auto}.overlay.open{display:grid}.dialog{width:min(720px,100%);max-height:82vh;overflow:auto;color:var(--text);background:var(--surface);border:1px solid #526478;border-radius:10px;box-shadow:0 22px 70px rgb(0 0 0 / 55%)}.dialog-head{position:sticky;z-index:1;top:0;display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border)}.dialog-head h2{flex:1;margin:0;font-size:18px}.dialog-body{padding:14px 16px 18px}.shortcut-grid{display:grid;grid-template-columns:minmax(185px,.9fr) 1.25fr;gap:1px;background:var(--border)}.shortcut-grid>div{min-height:44px;display:flex;align-items:center;gap:5px;padding:9px 11px;background:var(--surface)}.shortcut-grid .desc{color:var(--muted)}#commandInput{width:100%;min-height:42px;padding:8px 11px;color:var(--text);background:#0d141c;border:1px solid var(--border);border-radius:7px}#commandList{margin:10px 0 0;padding:0;list-style:none}#commandList button{width:100%;display:flex;align-items:center;gap:12px;padding:9px 11px;text-align:left;background:transparent;border-color:transparent}#commandList button:hover,#commandList button.active{background:var(--surface2);border-color:var(--border)}#commandList .cmd-key{margin-left:auto;color:var(--muted);font-size:12px}#toast{position:fixed;z-index:120;left:calc(50% + var(--side-w)/2);bottom:48px;max-width:min(520px,calc(100vw - var(--side-w) - 28px));translate:-50% 10px;padding:9px 14px;color:#eafff6;background:#092219;border:1px solid var(--accent);border-radius:7px;opacity:0;pointer-events:none;transition:opacity .16s,translate .16s}#toast.show{opacity:1;translate:-50% 0}.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:980px){:root{--side-w:194px}.brand-copy small{display:none}.top-actions{gap:5px}.top-actions button{padding-inline:8px}#sightB{font-size:0}#sightB::after{content:"範圍";font-size:13px}}@media(max-width:720px){:root{--bar-h:56px;--side-w:166px}html,body{font-size:14px}.brand-copy{display:none}.brand{padding-right:2px}.tool-buttons{grid-template-columns:1fr}.tool-buttons .wide{grid-column:auto}.top-actions #exportB,.top-actions #importB,.top-actions #resetB,.action-divider{display:none}#props{width:min(280px,calc(100vw - var(--side-w) - 16px));right:8px}.shortcut-grid{grid-template-columns:1fr}.shortcut-grid .desc{min-height:36px}#saveStatus{display:none}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+</head>
+<body>
+<header id="bar" aria-label="地圖編輯工具列">
+<div class="brand"><span class="brand-mark">M</span><span class="brand-copy"><strong>宮子地圖編輯器</strong><small>Map Editor Pro</small></span></div>
+<div class="top-actions" role="group" aria-label="檔案與檢視操作"><button id="sightB" class="on" aria-pressed="true" title="切換感應範圍 (A)">感應範圍</button><span class="action-divider" aria-hidden="true"></span><button id="undoB" class="icon-button" title="復原 (Ctrl+Z)" aria-label="復原">↶</button><button id="redoB" class="icon-button" title="重做 (Ctrl+Y)" aria-label="重做">↷</button><button id="duplicateB" title="複製選取物件 (Ctrl+D)">⧉ 複製物件</button><button id="fitB" class="icon-button" title="顯示全部 (F)" aria-label="顯示全部">⊡</button><span class="action-divider" aria-hidden="true"></span><button id="exportB" title="匯出 JSON (Ctrl+Shift+S)">匯出</button><button id="importB" title="匯入 JSON (Ctrl+O)">匯入</button><input id="importFile" class="sr-only" type="file" accept="application/json,.json"><button id="resetB" class="warn">重設</button></div>
+</header>
+<nav id="toolbox" aria-label="物件工具">
+<section class="tool-group" role="group" aria-label="編輯"><span class="tool-group-label">編輯</span><div class="tool-buttons"><button class="wide on" data-mode="select" data-icon="↖" data-shortcut="V" title="選取與移動 (V)">選取與移動</button></div></section>
+<section class="tool-group" role="group" aria-label="場景元件"><span class="tool-group-label">場景元件</span><div class="tool-buttons">
+<button data-mode="plat" data-icon="━" data-shortcut="P" title="新增跳台 (P)">跳台</button><button data-mode="slab" data-icon="▰" data-shortcut="B" title="新增樓板 (B)">樓板</button><button data-mode="wall" data-icon="▮" data-shortcut="W" title="新增牆 (W)">牆</button><button data-mode="breakwall" data-icon="▧" data-shortcut="R" title="新增可破壞牆 (R)">破壞牆</button><button data-mode="ghostwall" data-icon="◫" data-shortcut="Shift+W" title="新增幽靈牆 (Shift+W)">幽靈牆</button><button data-mode="crate" data-icon="▣" data-shortcut="X" title="新增可破壞箱子 (X)">破壞箱</button><button data-mode="elev" data-icon="↕" data-shortcut="E" title="新增電梯 (E)">電梯</button><button data-mode="cp" data-icon="⚑" data-shortcut="C" title="新增存檔點 (C)">存檔點</button><button data-mode="moverh" data-icon="↔" data-shortcut="H" title="新增水平移動台 (H)">水平台</button><button data-mode="moverv" data-icon="↕" data-shortcut="Shift+H" title="新增垂直移動台 (Shift+H)">垂直台</button><button data-mode="item" data-icon="◆" data-shortcut="I" title="新增道具 (I)">道具</button><button data-mode="gate" data-icon="⇥" data-shortcut="G" title="新增單向門 (G)">單向門</button><button data-mode="keydoor" data-icon="🔒" data-shortcut="K" title="新增鑰匙門 (K)">鑰匙門</button><button data-mode="camzone" data-icon="🎥" data-shortcut="Z" title="新增攝影機框 (Z)">攝影機框</button><button data-mode="pstart" data-icon="★" data-shortcut="S" title="放置玩家起點 (S)：新遊戲出生位置，全地圖僅一個，重放即移動">玩家起點</button>
+</div></section>
+<section class="tool-group" role="group" aria-label="敵人"><span class="tool-group-label">敵人</span><div class="tool-buttons"><button data-mode="pmc" data-icon="●" data-shortcut="Alt+1">PMC</button><button data-mode="pmc2" data-icon="●" data-shortcut="Alt+2">PMC2</button><button data-mode="sgtrooper" data-icon="●" data-shortcut="Alt+3">霰彈</button><button data-mode="shield" data-icon="●" data-shortcut="Alt+4">盾兵</button><button data-mode="turret" data-icon="●" data-shortcut="Alt+5">砲台</button><button data-mode="rocket" data-icon="●" data-shortcut="Alt+6">火箭</button><button data-mode="grenadier" data-icon="●" data-shortcut="Alt+7" title="手雷兵：大圓形偵測，拋物線手雷">手雷兵</button></div></section>
+</nav>
+<canvas id="cv" tabindex="0" aria-label="地圖編輯畫布"></canvas><aside id="props" aria-label="物件屬性"></aside>
+<footer id="statusbar"><span id="modeStatus">選取模式</span><span id="status">座標 0, 0　縮放 22%</span><span id="saveStatus">自動儲存已開啟</span><button id="helpB" title="快捷鍵說明 (?)">快捷鍵 <kbd>?</kbd></button></footer>
+<div id="helpOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><section class="dialog"><div class="dialog-head"><h2 id="helpTitle">快捷鍵與操作</h2><button class="icon-button close-overlay" aria-label="關閉">×</button></div><div class="dialog-body"><div class="shortcut-grid" id="shortcutGrid"></div></div></section></div>
+<div id="commandOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="commandTitle"><section class="dialog"><div class="dialog-head"><h2 id="commandTitle">指令面板</h2><button class="icon-button close-overlay" aria-label="關閉">×</button></div><div class="dialog-body"><input id="commandInput" autocomplete="off" placeholder="搜尋工具或指令…" aria-label="搜尋指令"><ul id="commandList"></ul></div></section></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+const INITIAL = {"solids": [{"x": -460, "y": 3000, "w": 16500, "h": 160, "c": "L0 地板"}, {"x": 800, "y": 2400, "w": 2160, "h": 90, "c": "L1 板"}, {"x": 3110, "y": 2400, "w": 2640, "h": 90, "c": "L1 板"}, {"x": 5900, "y": 2400, "w": 3840, "h": 90, "c": "L1 板"}, {"x": 9900, "y": 2400, "w": 4300, "h": 90, "c": "L1 板"}, {"x": 400, "y": 1800, "w": 1140, "h": 90, "c": "L2 板"}, {"x": 1700, "y": 1800, "w": 2500, "h": 90, "c": "L2 板"}, {"x": 4340, "y": 1800, "w": 7000, "h": 90, "c": "L2 板"}, {"x": 11500, "y": 1800, "w": 3500, "h": 90, "c": "L2 板"}, {"x": 400, "y": 1200, "w": 250, "h": 90, "c": "L3 板"}, {"x": 800, "y": 1200, "w": 5200, "h": 90, "c": "L3 板"}, {"x": 8200, "y": 1200, "w": 4540, "h": 90, "c": "L3 板"}, {"x": 12900, "y": 1200, "w": 700, "h": 90, "c": "L3 板"}, {"x": 400, "y": 600, "w": 9540, "h": 90, "c": "L4 板"}, {"x": 10080, "y": 600, "w": 2460, "h": 90, "c": "L4 板"}, {"x": 12700, "y": 600, "w": 700, "h": 90, "c": "L4 板"}, {"x": 400, "y": 100, "w": 40, "h": 500, "c": "Boss 房左牆"}, {"x": 15960, "y": 100, "w": 40, "h": 2900, "c": "世界右牆"}, {"x": 400, "y": 690, "w": 40, "h": 510, "c": "L3 西端牆"}, {"x": 14960, "y": 1890, "w": 40, "h": 510, "c": "L2 東端牆"}, {"x": 9770, "y": 2850, "w": 110, "h": 16, "c": "T1"}, {"x": 9860, "y": 2680, "w": 110, "h": 16, "c": "T1"}, {"x": 9550, "y": 2630, "w": 110, "h": 16, "c": "T1"}, {"x": 1250, "y": 2170, "w": 110, "h": 16, "c": "T2"}, {"x": 1660, "y": 2100, "w": 110, "h": 16, "c": "T2"}, {"x": 570, "y": 2200, "w": 110, "h": 16, "c": "T2"}, {"x": 12770, "y": 1050, "w": 110, "h": 16, "c": "T3"}, {"x": 12860, "y": 900, "w": 110, "h": 16, "c": "T3"}, {"x": 6470, "y": 1650, "w": 110, "h": 16, "c": "大廳西鏈"}, {"x": 6560, "y": 1500, "w": 110, "h": 16, "c": "大廳西鏈"}, {"x": 6430, "y": 1330, "w": 110, "h": 16, "c": "大廳西鏈"}, {"x": 7670, "y": 1650, "w": 110, "h": 16, "c": "大廳東鏈"}, {"x": 7760, "y": 1500, "w": 110, "h": 16, "c": "大廳東鏈"}, {"x": 7670, "y": 1350, "w": 110, "h": 16, "c": "大廳東鏈"}, {"x": 6900, "y": 1500, "w": 400, "h": 16, "c": "大廳中層橋"}, {"x": 260, "y": 2890, "w": 140, "h": 16}, {"x": 520, "y": 2810, "w": 130, "h": 16}, {"x": 760, "y": 2900, "w": 140, "h": 16}, {"x": 900, "y": 2940, "w": 100, "h": 60, "c": "台階（sim）"}, {"x": 1260, "y": 2850, "w": 120, "h": 16, "c": "平台（sim）"}, {"x": 1600, "y": 2790, "w": 130, "h": 16}, {"x": 2100, "y": 2880, "w": 130, "h": 16}, {"x": 2290, "y": 2760, "w": 120, "h": 16}, {"x": 2700, "y": 2870, "w": 130, "h": 16}, {"x": 3300, "y": 2870, "w": 120, "h": 16}, {"x": 3480, "y": 2740, "w": 135, "h": 16}, {"x": 3660, "y": 2610, "w": 120, "h": 16}, {"x": 4200, "y": 2870, "w": 130, "h": 16}, {"x": 4700, "y": 2880, "w": 130, "h": 16}, {"x": 4890, "y": 2760, "w": 120, "h": 16}, {"x": 5350, "y": 2870, "w": 130, "h": 16}, {"x": 7000, "y": 2870, "w": 130, "h": 16}, {"x": 7600, "y": 2880, "w": 130, "h": 16}, {"x": 7790, "y": 2760, "w": 120, "h": 16}, {"x": 8400, "y": 2870, "w": 120, "h": 16}, {"x": 8580, "y": 2740, "w": 135, "h": 16}, {"x": 8760, "y": 2610, "w": 120, "h": 16}, {"x": 9300, "y": 2870, "w": 130, "h": 16}, {"x": 10400, "y": 2880, "w": 130, "h": 16}, {"x": 10590, "y": 2760, "w": 120, "h": 16}, {"x": 11200, "y": 2870, "w": 130, "h": 16}, {"x": 11900, "y": 2870, "w": 120, "h": 16}, {"x": 12080, "y": 2740, "w": 135, "h": 16}, {"x": 12260, "y": 2610, "w": 120, "h": 16}, {"x": 12900, "y": 2870, "w": 130, "h": 16}, {"x": 13600, "y": 2880, "w": 130, "h": 16}, {"x": 13790, "y": 2760, "w": 120, "h": 16}, {"x": 14400, "y": 2870, "w": 130, "h": 16}, {"x": 15100, "y": 2870, "w": 130, "h": 16}, {"x": 1400, "y": 2270, "w": 130, "h": 16}, {"x": 2000, "y": 2280, "w": 130, "h": 16}, {"x": 2190, "y": 2160, "w": 120, "h": 16}, {"x": 2700, "y": 2270, "w": 130, "h": 16}, {"x": 3500, "y": 2270, "w": 130, "h": 16}, {"x": 4100, "y": 2270, "w": 120, "h": 16}, {"x": 4260, "y": 2110, "w": 135, "h": 16}, {"x": 5000, "y": 2270, "w": 130, "h": 16}, {"x": 6300, "y": 2280, "w": 130, "h": 16}, {"x": 6490, "y": 2160, "w": 120, "h": 16}, {"x": 7200, "y": 2270, "w": 130, "h": 16}, {"x": 7900, "y": 2270, "w": 120, "h": 16}, {"x": 8090, "y": 2150, "w": 135, "h": 16}, {"x": 8260, "y": 2010, "w": 120, "h": 16}, {"x": 8900, "y": 2270, "w": 130, "h": 16}, {"x": 9750, "y": 2110, "w": 130, "h": 16}, {"x": 10690, "y": 2150, "w": 120, "h": 16}, {"x": 12220, "y": 2150, "w": 130, "h": 16}, {"x": 13460, "y": 2070, "w": 130, "h": 16}, {"x": 12800, "y": 2100, "w": 120, "h": 16}, {"x": 1300, "y": 1680, "w": 130, "h": 16}, {"x": 1490, "y": 1560, "w": 120, "h": 16}, {"x": 2200, "y": 1670, "w": 130, "h": 16}, {"x": 2900, "y": 1670, "w": 130, "h": 16}, {"x": 3500, "y": 1680, "w": 130, "h": 16}, {"x": 3690, "y": 1560, "w": 120, "h": 16}, {"x": 4700, "y": 1670, "w": 130, "h": 16}, {"x": 5400, "y": 1670, "w": 130, "h": 16}, {"x": 8700, "y": 1680, "w": 130, "h": 16}, {"x": 8890, "y": 1560, "w": 120, "h": 16}, {"x": 9600, "y": 1670, "w": 130, "h": 16}, {"x": 10200, "y": 1670, "w": 120, "h": 16}, {"x": 10380, "y": 1540, "w": 135, "h": 16}, {"x": 10560, "y": 1410, "w": 120, "h": 16}, {"x": 11700, "y": 1670, "w": 130, "h": 16}, {"x": 12400, "y": 1680, "w": 130, "h": 16}, {"x": 12590, "y": 1560, "w": 120, "h": 16}, {"x": 13400, "y": 1670, "w": 130, "h": 16}, {"x": 14040, "y": 1620, "w": 130, "h": 16}, {"x": 1100, "y": 1070, "w": 130, "h": 16}, {"x": 1700, "y": 1080, "w": 130, "h": 16}, {"x": 1890, "y": 960, "w": 120, "h": 16}, {"x": 2600, "y": 1070, "w": 130, "h": 16}, {"x": 3200, "y": 1070, "w": 120, "h": 16}, {"x": 2860, "y": 900, "w": 135, "h": 16}, {"x": 3560, "y": 810, "w": 120, "h": 16}, {"x": 4100, "y": 1070, "w": 130, "h": 16}, {"x": 4800, "y": 1080, "w": 130, "h": 16}, {"x": 4990, "y": 960, "w": 120, "h": 16}, {"x": 5600, "y": 1070, "w": 130, "h": 16}, {"x": 8500, "y": 1070, "w": 130, "h": 16}, {"x": 9200, "y": 1080, "w": 130, "h": 16}, {"x": 9390, "y": 960, "w": 120, "h": 16}, {"x": 10100, "y": 1070, "w": 130, "h": 16}, {"x": 10800, "y": 1070, "w": 120, "h": 16}, {"x": 10980, "y": 940, "w": 135, "h": 16}, {"x": 11160, "y": 810, "w": 120, "h": 16}, {"x": 11800, "y": 1070, "w": 130, "h": 16}, {"x": 12300, "y": 1070, "w": 130, "h": 16}, {"x": 3400, "y": 470, "w": 130, "h": 16}, {"x": 4200, "y": 480, "w": 130, "h": 16}, {"x": 4390, "y": 360, "w": 120, "h": 16}, {"x": 5200, "y": 470, "w": 130, "h": 16}, {"x": 5900, "y": 470, "w": 120, "h": 16}, {"x": 6080, "y": 340, "w": 135, "h": 16}, {"x": 6260, "y": 210, "w": 120, "h": 16}, {"x": 6900, "y": 470, "w": 130, "h": 16}, {"x": 7700, "y": 480, "w": 130, "h": 16}, {"x": 7890, "y": 360, "w": 120, "h": 16}, {"x": 8700, "y": 470, "w": 130, "h": 16}, {"x": 9500, "y": 480, "w": 130, "h": 16}, {"x": 9690, "y": 360, "w": 120, "h": 16}, {"x": 10400, "y": 470, "w": 130, "h": 16}, {"x": 11000, "y": 470, "w": 120, "h": 16}, {"x": 11180, "y": 340, "w": 135, "h": 16}, {"x": 11360, "y": 210, "w": 120, "h": 16}, {"x": 12000, "y": 470, "w": 130, "h": 16}, {"x": 700, "y": 490, "w": 140, "h": 16}, {"x": 1100, "y": 420, "w": 140, "h": 16}, {"x": 1500, "y": 490, "w": 140, "h": 16}, {"x": 1900, "y": 430, "w": 130, "h": 16}, {"x": 2300, "y": 490, "w": 130, "h": 16}, {"x": 7750, "y": 2080, "w": 130, "h": 16}, {"x": 8410, "y": 2120, "w": 340, "h": 290}, {"x": 10250, "y": 2100, "w": 160, "h": 310}, {"x": 10020, "y": 2230, "w": 130, "h": 16}, {"x": 14440, "y": 2100, "w": 540, "h": 60}, {"x": 15380, "y": 620, "w": 400, "h": 90}, {"x": 12490, "y": 2350, "w": 200, "h": 70}, {"x": -490, "y": -1810, "w": 40, "h": 6000}, {"x": 300, "y": 210, "w": 100, "h": 40}, {"x": 270, "y": 960, "w": 150, "h": 40}, {"x": 300, "y": 600, "w": 110, "h": 50}, {"x": 280, "y": 1260, "w": 130, "h": 16}, {"x": -450, "y": 1250, "w": 200, "h": 90}, {"x": -460, "y": 820, "w": 160, "h": 90}, {"x": -450, "y": 340, "w": 140, "h": 90}, {"x": 6250, "y": 2930, "w": 400, "h": 90}, {"x": 9030, "y": 2470, "w": 400, "h": 90}, {"x": 10670, "y": 2950, "w": 400, "h": 90}, {"x": 13230, "y": 2940, "w": 400, "h": 90}, {"x": 15000, "y": 2310, "w": 400, "h": 90}, {"x": 10330, "y": 1140, "w": 400, "h": 90}, {"x": 10520, "y": 660, "w": 400, "h": 90}, {"x": 11310, "y": 1170, "w": 400, "h": 90}, {"x": 13640, "y": 1740, "w": 400, "h": 90}, {"x": 14270, "y": 2680, "w": 130, "h": 16}, {"x": 14480, "y": 2550, "w": 130, "h": 16}, {"x": 14200, "y": 2450, "w": 130, "h": 16}], "elevators": [{"x": 5760, "w": 140, "top": 2400, "bottom": 3000, "lock": "E1", "c": "E1 起始平原 → 下水道"}, {"x": 11360, "w": 140, "top": 1800, "bottom": 2400, "c": "E2 下水道東 → 東迴廊"}, {"x": 660, "w": 140, "top": 1200, "bottom": 1800, "lock": "K1", "c": "E3 西洞窟 → 西高地"}, {"x": 12560, "w": 140, "top": 600, "bottom": 1200, "c": "E4 東塔 → 天頂迴廊"}, {"x": 15790, "w": 150, "top": 620, "bottom": 3000, "lock": "E5"}], "checkpoints": [{"x": 5500, "y": 3000, "c": "L0 起始平原・電梯前"}, {"x": 4500, "y": 2400, "c": "L1 下水道中段"}, {"x": 7100, "y": 1800, "c": "L2 中央大廳"}, {"x": 12470, "y": 1200, "c": "L3 東塔電梯前"}, {"x": 2950, "y": 600, "c": "L4 Boss 門前"}], "spawns": [{"x": 700, "y": 3000, "range": 130, "kind": "pmc"}, {"x": 1450, "y": 3000, "range": 90, "kind": "sgtrooper"}, {"x": 2300, "y": 3000, "range": 120, "kind": "pmc"}, {"x": 3100, "y": 3000, "range": 110, "kind": "pmc2"}, {"x": 4200, "y": 3000, "range": 90, "kind": "sgtrooper"}, {"x": 5200, "y": 3000, "range": 110, "kind": "pmc"}, {"x": 2290, "y": 2760, "range": 0, "kind": "turret"}, {"x": 7400, "y": 3000, "range": 110, "kind": "pmc2"}, {"x": 8600, "y": 3000, "range": 60, "kind": "rocket"}, {"x": 9900, "y": 3000, "range": 90, "kind": "sgtrooper"}, {"x": 11500, "y": 3000, "range": 80, "kind": "shield"}, {"x": 13000, "y": 3000, "range": 110, "kind": "pmc2"}, {"x": 14500, "y": 2100, "range": 60, "kind": "rocket"}, {"x": 8760, "y": 2610, "range": 0, "kind": "turret"}, {"x": 12260, "y": 2610, "range": 25, "kind": "rocket"}, {"x": 1200, "y": 2400, "range": 0, "kind": "turret"}, {"x": 2500, "y": 2400, "range": 110, "kind": "pmc2"}, {"x": 3800, "y": 2400, "range": 80, "kind": "shield"}, {"x": 5100, "y": 2400, "range": 90, "kind": "sgtrooper"}, {"x": 6600, "y": 2400, "range": 0, "kind": "turret"}, {"x": 7900, "y": 2400, "range": 120, "kind": "pmc"}, {"x": 9200, "y": 2400, "range": 370, "kind": "pmc2"}, {"x": 10900, "y": 2400, "range": 360, "kind": "shield"}, {"x": 12290, "y": 2160, "range": 60, "kind": "rocket"}, {"x": 13600, "y": 2400, "range": 100, "kind": "pmc2"}, {"x": 900, "y": 1800, "range": 90, "kind": "sgtrooper"}, {"x": 1900, "y": 1800, "range": 60, "kind": "rocket"}, {"x": 3000, "y": 1800, "range": 80, "kind": "shield"}, {"x": 4900, "y": 1800, "range": 110, "kind": "pmc2"}, {"x": 5700, "y": 1800, "range": 0, "kind": "turret"}, {"x": 6600, "y": 1800, "range": 120, "kind": "pmc"}, {"x": 7500, "y": 1800, "range": 90, "kind": "sgtrooper"}, {"x": 8900, "y": 1800, "range": 0, "kind": "turret"}, {"x": 10100, "y": 1800, "range": 80, "kind": "shield"}, {"x": 12100, "y": 1800, "range": 110, "kind": "pmc2"}, {"x": 13300, "y": 1800, "range": 60, "kind": "rocket"}, {"x": 14400, "y": 1800, "range": 70, "kind": "shield"}, {"x": 3690, "y": 1560, "range": 25, "kind": "rocket"}, {"x": 10560, "y": 1410, "range": 0, "kind": "turret"}, {"x": 1300, "y": 1200, "range": 60, "kind": "rocket"}, {"x": 2500, "y": 1200, "range": 110, "kind": "pmc2"}, {"x": 3700, "y": 1200, "range": 80, "kind": "shield"}, {"x": 4900, "y": 1200, "range": 60, "kind": "rocket"}, {"x": 5700, "y": 1200, "range": 0, "kind": "turret"}, {"x": 8600, "y": 1200, "range": 110, "kind": "pmc2"}, {"x": 9800, "y": 1200, "range": 80, "kind": "shield"}, {"x": 11000, "y": 1200, "range": 60, "kind": "rocket"}, {"x": 12200, "y": 1200, "range": 0, "kind": "turret"}, {"x": 1890, "y": 960, "range": 0, "kind": "turret"}, {"x": 11160, "y": 810, "range": 25, "kind": "rocket"}, {"x": 12900, "y": 600, "range": 60, "kind": "shield"}, {"x": 11900, "y": 600, "range": 60, "kind": "rocket"}, {"x": 11000, "y": 600, "range": 0, "kind": "turret"}, {"x": 10300, "y": 600, "range": 70, "kind": "shield"}, {"x": 9300, "y": 600, "range": 60, "kind": "rocket"}, {"x": 8300, "y": 600, "range": 0, "kind": "turret"}, {"x": 7300, "y": 600, "range": 100, "kind": "pmc2"}, {"x": 6300, "y": 600, "range": 70, "kind": "shield"}, {"x": 5300, "y": 600, "range": 60, "kind": "rocket"}, {"x": 4300, "y": 600, "range": 100, "kind": "pmc2"}, {"x": 3600, "y": 600, "range": 50, "kind": "shield"}, {"x": 4390, "y": 360, "range": 0, "kind": "turret"}, {"x": 6260, "y": 210, "range": 25, "kind": "rocket"}, {"x": 11360, "y": 210, "range": 0, "kind": "turret"}, {"x": 8580, "y": 2120, "range": 150, "kind": "shield"}, {"x": 9820, "y": 2110, "range": 90, "kind": "rocket"}, {"x": 14020, "y": 3000, "range": 410, "kind": "shield"}, {"x": 1550, "y": 1560, "range": 90, "kind": "rocket"}, {"x": 12980, "y": 2400, "range": 90, "kind": "shield"}, {"x": 12060, "y": 2400, "range": 250, "kind": "pmc"}, {"x": 13350, "y": 2400, "range": 90, "kind": "sgtrooper"}, {"x": 10750, "y": 2150, "range": 90, "kind": "turret"}, {"x": 3800, "y": 1800, "range": 90, "kind": "pmc"}, {"x": 2420, "y": 1800, "range": 90, "kind": "turret"}, {"x": 8320, "y": 2010, "range": 90, "kind": "turret"}, {"x": 630, "y": 2200, "range": 90, "kind": "rocket"}, {"x": 320, "y": 600, "range": 90, "kind": "rocket"}, {"x": 8570, "y": 1080, "range": 90, "kind": "rocket"}, {"x": 13000, "y": 1200, "range": 90, "kind": "turret"}, {"x": 330, "y": 960, "range": 90, "kind": "rocket"}, {"x": 350, "y": 1260, "range": 90, "kind": "rocket"}, {"x": -400, "y": 1260, "range": 90, "kind": "rocket"}, {"x": -370, "y": 810, "range": 90, "kind": "rocket"}, {"x": -390, "y": 340, "range": 90, "kind": "rocket"}, {"x": 6910, "y": 3000, "range": 90, "kind": "pmc2"}, {"x": 12860, "y": 2100, "range": 90, "kind": "turret"}, {"x": 13520, "y": 2070, "range": 90, "kind": "turret"}, {"x": 15000, "y": 3000, "range": 90, "kind": "sgtrooper"}, {"x": 15510, "y": 3000, "range": 90, "kind": "sgtrooper"}, {"x": 13840, "y": 1670, "range": 90, "kind": "sgtrooper"}, {"x": 10930, "y": 1800, "range": 90, "kind": "pmc2"}, {"x": 6550, "y": 2150, "range": 90, "kind": "turret"}, {"x": 14790, "y": 2100, "range": 90, "kind": "shield"}, {"x": 15160, "y": 2870, "range": 90, "kind": "turret"}], "movers": [{"x": 6020, "y": 1080, "w": 180, "dist": 2000, "speed": 120, "axis": "x"}, {"x": 10480, "y": 2050, "w": 180, "dist": 3780, "speed": 120, "axis": "x"}, {"x": -70, "y": 1940, "w": 180, "dist": -1900, "speed": 60, "axis": "y"}, {"x": -390, "y": 1680, "w": 180, "dist": 730, "speed": 120, "axis": "x"}], "items": [{"x": 14910, "y": 2100, "card": 9, "type": "char", "c": "日鞠：L1 東端"}, {"x": 15220, "y": 2310, "card": 8, "type": "char", "c": "風華：大廳中層橋"}, {"x": 500, "y": 1200, "card": 7, "type": "char", "c": "三千留：L3 西端短板"}, {"x": 1510, "y": 1800, "type": "key", "id": "K1"}, {"x": 15580, "y": 600, "type": "skin", "skin": "swim"}, {"x": 9610, "y": 2630, "type": "key", "id": "E1"}, {"x": 350, "y": 210, "type": "key", "id": "E5"}, {"x": 7120, "y": 1500, "type": "key", "id": "K1"}], "gates": [{"x": 14160, "y": 2170, "w": 40, "h": 230, "side": "left"}]};
+INITIAL.breakables ||= [];
+INITIAL.ghosts ||= [];
+let data = JSON.parse(localStorage.getItem("miyako_map_edit") || "null") || JSON.parse(JSON.stringify(INITIAL));
+data.movers = data.movers || (INITIAL.movers ? JSON.parse(JSON.stringify(INITIAL.movers)) : []);
+data.items = data.items || (INITIAL.items ? JSON.parse(JSON.stringify(INITIAL.items)) : []);
+data.gates = data.gates || (INITIAL.gates ? JSON.parse(JSON.stringify(INITIAL.gates)) : []);
+data.breakables = data.breakables || [];
+data.ghosts = data.ghosts || [];
+let showSight = true;
+const SIGHT = k => k === "rocket" ? [1000, 170] : k === "grenadier" ? [700, 0] : [480, 60];   // 交戰偵測（水平/垂直；手雷兵=圓形半徑）
+const SIGHT_MUL = 1.8;   // 遊戲內交戰倍率 ENEMY_FIRE_MUL（spawn 覆寫值不吃倍率，所畫即所得）
+const ITEM_COL = { char: "#ffcf4a", skin: "#ff8ac2", key: "#ffa14a" };
+const CARD_NAMES = { 7: "日鞠", 8: "風華", 9: "三千留" };
+const SKIN_NAMES = { swim: "泳裝", shiroko: "白子" };
+const FLOORS = [3000, 2400, 1800, 1200, 600];
+const KC = { pmc: "#ffaa3c", pmc2: "#ff6e28", sgtrooper: "#fadc50", shield: "#78dcf0", turret: "#c88cff", rocket: "#ff5078", grenadier: "#7dd87d" };
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+let scale = 0.22, ox = 60, oy = 60;                 // 世界→螢幕：sx = (wx-ox)*scale
+let mode = "select", sel = null, hoverXY = [0, 0];
+let drag = null;                                     // {type:'pan'|'move'|'resizeL'|'resizeR', ...}
+const undoStack = [], redoStack = [];
+const BAR_H = () => parseInt(getComputedStyle(document.documentElement).getPropertyValue("--bar-h"), 10) || 56;
+const SIDE_W = () => parseInt(getComputedStyle(document.documentElement).getPropertyValue("--side-w"), 10) || 0;
+
+function pushUndo() { undoStack.push(JSON.stringify(data)); redoStack.length = 0; if (undoStack.length > 120) undoStack.shift(); updateHistoryButtons(); }
+function undo() { if (!undoStack.length) return notify("沒有可復原的操作"); redoStack.push(JSON.stringify(data)); data = JSON.parse(undoStack.pop()); sel = null; save(); draw(); showProps(); updateHistoryButtons(); notify("已復原"); }
+function redo() { if (!redoStack.length) return notify("沒有可重做的操作"); undoStack.push(JSON.stringify(data)); data = JSON.parse(redoStack.pop()); sel = null; save(); draw(); showProps(); updateHistoryButtons(); notify("已重做"); }
+function save() { localStorage.setItem("miyako_map_edit", JSON.stringify(data)); const s = document.getElementById("saveStatus"); if (s) s.textContent = "已自動儲存 · " + new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}); }
+function W2S(x, y) { return [(x - ox) * scale, (y - oy) * scale + BAR_H()]; }
+function S2W(px, py) { return [px / scale + ox, (py - BAR_H()) / scale + oy]; }
+function snap(v) { return Math.round(v / 10) * 10; }
+function nearestFloor(y) { let best = FLOORS[0]; for (const f of FLOORS) if (Math.abs(f - y) < Math.abs(best - y)) best = f; return best; }
+
+function fitCanvas() {
+  const width = Math.max(1, innerWidth - SIDE_W());
+  const height = Math.max(1, innerHeight - BAR_H() - 34);
+  cv.width = width; cv.height = height;
+  cv.style.width = width + "px"; cv.style.height = height + "px";
+  draw();
+}
+addEventListener("resize", fitCanvas);
+
+function draw() {
+  data.camzones ||= [];   // 舊存檔/舊 undo 快照相容
+  ctx.setTransform(1, 0, 0, 1, 0, -BAR_H());
+  ctx.fillStyle = "#0d1218"; ctx.fillRect(0, BAR_H(), cv.width, cv.height);
+  // 網格
+  const [wx0, wy0] = S2W(0, BAR_H()), [wx1, wy1] = S2W(cv.width, cv.height + BAR_H());
+  ctx.font = "11px sans-serif"; ctx.textAlign = "left";
+  for (let gx = Math.floor(wx0 / 500) * 500; gx < wx1; gx += 500) {
+    const [sx] = W2S(gx, 0);
+    ctx.strokeStyle = gx % 1000 ? "#1b1e27" : "#242938";
+    ctx.beginPath(); ctx.moveTo(sx, BAR_H()); ctx.lineTo(sx, cv.height + BAR_H()); ctx.stroke();
+    if (gx % 1000 === 0) { ctx.fillStyle = "#5b6580"; ctx.fillText(gx, sx + 3, BAR_H() + 14); }
+  }
+  for (let gy = Math.floor(wy0 / 200) * 200; gy < wy1; gy += 200) {
+    const [, sy] = W2S(0, gy);
+    ctx.strokeStyle = gy % 600 ? "#1b1e27" : "#242938";
+    ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(cv.width, sy); ctx.stroke();
+    if (gy % 600 === 0) { ctx.fillStyle = "#5b6580"; ctx.fillText(gy, 4, sy - 3); }
+  }
+  // Boss 房（參考，不可編輯）
+  {
+    const [x0, y0] = W2S(440, 100), [x1, y1] = W2S(2800, 600);
+    ctx.strokeStyle = "#c0504f"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+    ctx.fillStyle = "#c0504f"; ctx.fillText("BOSS房", x0 + 6, y0 + 14);
+    ctx.lineWidth = 1;
+  }
+  // SOLIDS
+  for (const s of data.solids) {
+    const [sx, sy] = W2S(s.x, s.y), sw = s.w * scale, sh = s.h * scale;
+    const thin = s.h <= 30;
+    ctx.fillStyle = thin ? "#46be6e" : "#5f6473";
+    ctx.fillRect(sx, sy, sw, Math.max(sh, 2));
+    if (s === sel) { ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2; ctx.strokeRect(sx - 2, sy - 2, sw + 4, Math.max(sh, 2) + 4); ctx.lineWidth = 1;
+      ctx.fillStyle = "#ffd75e"; ctx.fillRect(sx - 5, sy - 5, 10, 10); ctx.fillRect(sx + sw - 5, sy - 5, 10, 10); }
+  }
+  // 可破壞牆／箱子
+  data.breakables.forEach((b, i) => {
+    const [sx, sy] = W2S(b.x, b.y), sw = b.w * scale, sh = b.h * scale;
+    const crate = b.type === "crate";
+    ctx.fillStyle = crate ? "#76512d" : "#68636b";
+    ctx.fillRect(sx, sy, sw, sh);
+    ctx.strokeStyle = crate ? "#d69a50" : "#c77b70";
+    ctx.lineWidth = b === sel ? 2 : 1;
+    ctx.strokeRect(sx, sy, sw, sh);
+    ctx.beginPath();
+    if (crate) {
+      ctx.moveTo(sx, sy); ctx.lineTo(sx + sw, sy + sh);
+      ctx.moveTo(sx + sw, sy); ctx.lineTo(sx, sy + sh);
+    } else {
+      ctx.moveTo(sx + sw * .15, sy); ctx.lineTo(sx + sw * .55, sy + sh * .38);
+      ctx.lineTo(sx + sw * .32, sy + sh * .7); ctx.lineTo(sx + sw * .72, sy + sh);
+    }
+    ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = b === sel ? "#ffd75e" : "#ff9c83";
+    ctx.fillText((crate ? "破壞箱 " : "破壞牆 ") + (b.hp || 1) + "HP" + (b.drop ? " ↓" + b.drop : ""), sx, sy - 5);
+    if (b === sel) { ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2; ctx.strokeRect(sx - 2, sy - 2, sw + 4, sh + 4); ctx.lineWidth = 1; }
+  });
+  // 幽靈牆：遊戲中無碰撞，玩家進入後淡出並消失
+  data.ghosts.forEach((g, i) => {
+    const [sx, sy] = W2S(g.x, g.y), sw = g.w * scale, sh = g.h * scale;
+    ctx.save();
+    ctx.globalAlpha = g === sel ? .62 : .3;
+    ctx.fillStyle = "#7188a0";
+    ctx.fillRect(sx, sy, sw, sh);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = g === sel ? "#ffd75e" : "#8fc7ef";
+    ctx.setLineDash([6, 5]); ctx.strokeRect(sx, sy, sw, sh); ctx.setLineDash([]);
+    ctx.fillStyle = g === sel ? "#ffd75e" : "#8fc7ef";
+    ctx.fillText("幽靈牆 " + i + "（無碰撞）", sx, sy - 5);
+    ctx.restore();
+  });
+  // 電梯
+  data.elevators.forEach((e, i) => {
+    const [x0, y0] = W2S(e.x, e.top), [x1, y1] = W2S(e.x + e.w, e.bottom);
+    ctx.strokeStyle = e === sel ? "#ffd75e" : "#e05a5a"; ctx.setLineDash([5, 6]);
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
+    ctx.fillStyle = e === sel ? "#ffd75e" : "#e05a5a";
+    ctx.beginPath(); ctx.moveTo((x0 + x1) / 2, y1 - 10); ctx.lineTo(x0 + 2, y1 - 1); ctx.lineTo(x1 - 2, y1 - 1); ctx.fill();
+    const py = e.start === "top" ? y0 : y1;   // 初始停靠端：琥珀色平台條
+    ctx.fillStyle = "#e0b558";
+    ctx.fillRect(x0, py - 3, x1 - x0, 5);
+    ctx.fillText("E" + (i + 1) + (e.lock ? "🔒" + e.lock : "") + (e.speed ? " " + e.speed + "px/s" : ""), (x0 + x1) / 2 - 7, y0 - 4);
+    if (e === sel && pvOn) {   // 幽靈預覽：從 start 端以實際速度駛向另一端再返回
+      const { p, dir } = pvPos(e.bottom - e.top, e.speed || 230);
+      const gy = e.start === "top" ? e.top + p : e.bottom - p;
+      const dirScr = e.start === "top" ? dir : -dir;   // 世界 y 向下為正
+      drawGhostPlat(x0, W2S(e.x, gy)[1], x1 - x0, dirScr, "y");
+    }
+  });
+  // 玩家起點（綠色小人＋START）
+  if (data.playerStart) {
+    const p = data.playerStart;
+    const [sx, sy] = W2S(p.x, p.y);
+    const on = p === sel;
+    ctx.strokeStyle = ctx.fillStyle = on ? "#ffd75e" : "#5ee08a";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx, sy - 14); ctx.stroke();          // 身體
+    ctx.beginPath(); ctx.arc(sx, sy - 19, 5, 0, 7); ctx.fill();                          // 頭
+    ctx.beginPath(); ctx.moveTo(sx, sy - 11); ctx.lineTo(sx - 6, sy - 4); ctx.moveTo(sx, sy - 11); ctx.lineTo(sx + 6, sy - 4); ctx.stroke();   // 腳
+    ctx.lineWidth = 1;
+    ctx.fillText("START", sx - 16, sy + 12);
+  }
+  // 存檔點
+  data.checkpoints.forEach((c, i) => {
+    const [sx, sy] = W2S(c.x, c.y);
+    ctx.strokeStyle = ctx.fillStyle = c === sel ? "#ffd75e" : "#5aaaff";
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx, sy - 22); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(sx, sy - 22); ctx.lineTo(sx + 13, sy - 17); ctx.lineTo(sx, sy - 12); ctx.fill();
+    ctx.fillText("CP" + i, sx - 10, sy + 12);
+  });
+  // 敵人偵測/開火範圍（sight/atk 可被 spawn 覆寫；手雷兵=圓形，其餘=水平框 ±sight、垂直 ±sightV）
+  if (showSight) data.spawns.forEach(e => {
+    const col = KC[e.kind] || "#fff";
+    const circ = e.kind === "grenadier";
+    const [dh, dv0] = SIGHT(e.kind);
+    const sh = e.sight != null ? e.sight : dh * SIGHT_MUL;   // 覆寫＝所畫即所得；預設吃 1.8 交戰倍率
+    const dv = e.sightV != null ? e.sightV : dv0;            // 垂直偵測可覆寫
+    ctx.fillStyle = col; ctx.globalAlpha = e === sel ? 0.12 : 0.045;
+    if (circ) {
+      const [cx, cy] = W2S(e.x, e.y);
+      ctx.beginPath(); ctx.arc(cx, cy, sh * scale, 0, 7); ctx.fill();
+      if (e === sel) { ctx.globalAlpha = 0.5; ctx.strokeStyle = col; ctx.stroke(); }
+    } else {
+      const [x0, y0] = W2S(e.x - sh, e.y - dv), [x1, y1] = W2S(e.x + sh, e.y + dv);
+      ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      if (e === sel) { ctx.globalAlpha = 0.5; ctx.strokeStyle = col; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); }
+    }
+    if (e.atk) {   // 自訂開火距離：橙色虛線
+      ctx.globalAlpha = e === sel ? 0.9 : 0.35;
+      ctx.strokeStyle = "#ff9d4d"; ctx.setLineDash([6, 5]);
+      if (circ) {
+        const [cx, cy] = W2S(e.x, e.y);
+        ctx.beginPath(); ctx.arc(cx, cy, e.atk * scale, 0, 7); ctx.stroke();
+      } else {
+        const [ax0, ay0] = W2S(e.x - e.atk, e.y - dv), [ax1, ay1] = W2S(e.x + e.atk, e.y + dv);
+        ctx.strokeRect(ax0, ay0, ax1 - ax0, ay1 - ay0);
+      }
+      ctx.setLineDash([]);
+    }
+    ctx.globalAlpha = 1;
+  });
+  // 移動平台（青色 + 來回路徑）
+  data.movers.forEach((m, i) => {
+    const [sx, sy] = W2S(m.x, m.y), sw = m.w * scale;
+    const ex = m.axis === "x" ? m.x + m.dist : m.x, ey = m.axis === "y" ? m.y + m.dist : m.y;
+    const [tx, ty] = W2S(ex, ey);
+    const active = m === sel;
+    ctx.strokeStyle = active ? "#ffd75e" : "#3ec8c8";
+    ctx.lineWidth = active ? 2 : 1; ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(sx + sw / 2, sy); ctx.lineTo(tx + sw / 2, ty); ctx.stroke(); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    ctx.fillStyle = active ? "#ffd75e" : "#3ec8c8";
+    ctx.fillRect(sx, sy, sw, 5);
+    ctx.save();
+    ctx.globalAlpha = active ? .72 : .35;
+    ctx.fillStyle = active ? "#ffd75e" : "#5fe2e2";
+    ctx.fillRect(tx, ty - 2, sw, 7);
+    ctx.restore();
+    {   // 起始端琥珀條（start 指名絕對端點；缺省=放置點）
+      const far = m.start ? (m.axis === "y" ? m.start === "bottom" : m.start === "right") === (m.dist > 0) : false;
+      const [bx2, by2] = far ? [tx, ty] : [sx, sy];
+      ctx.fillStyle = "#e0b558";
+      ctx.fillRect(bx2, by2 - 3, sw, 4);
+    }
+    ctx.fillText("M" + i + (m.axis === "x" ? "↔" : "↕"), sx, sy - 5);
+    if (active) {
+      ctx.strokeStyle = "#ffd75e";
+      ctx.strokeRect(sx - 2, sy - 2, sw + 4, 9);
+      ctx.strokeRect(tx - 3, ty - 5, sw + 6, 13);
+      const hx = tx + sw / 2, hy = ty + 1;
+      ctx.fillStyle = "#fff1a6";
+      ctx.beginPath();
+      ctx.moveTo(hx, hy - 7); ctx.lineTo(hx + 7, hy); ctx.lineTo(hx, hy + 7); ctx.lineTo(hx - 7, hy);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#ffd75e";
+      ctx.fillText("拖曳終點", tx + sw / 2 - 24, ty - 10);
+      if (pvOn) {   // 幽靈預覽：從 start 端以實際速度沿軌道來回
+        const { p, dir } = pvPos(Math.abs(m.dist), m.speed || 120);
+        const sgn = Math.sign(m.dist) || 1;
+        const far = m.start ? (m.axis === "y" ? m.start === "bottom" : m.start === "right") === (m.dist > 0) : false;
+        const pp = far ? Math.abs(m.dist) - p : p;
+        const gx = m.axis === "x" ? m.x + sgn * pp : m.x;
+        const gy = m.axis === "y" ? m.y + sgn * pp : m.y;
+        const [gsx, gsy] = W2S(gx, gy);
+        drawGhostPlat(gsx, gsy, sw, dir * sgn * (far ? -1 : 1), m.axis);
+      }
+    }
+  });
+  // 門：單向門（紫色）或需要指定鑰匙的鑰匙門（金色）
+  data.gates.forEach((g, i) => {
+    const [sx, sy] = W2S(g.x, g.y), sw = g.w * scale, sh = g.h * scale;
+    if (g.lock) {
+      ctx.fillStyle = g === sel ? "#d6a93d" : "#715b25";
+      ctx.fillRect(sx, sy, sw, sh);
+      ctx.fillStyle = "rgba(255,215,94,.16)";
+      ctx.fillRect(sx + Math.max(2, sw * .18), sy + 3, Math.max(2, sw * .64), Math.max(4, sh - 6));
+      const lx = sx + sw / 2, ly = sy + sh * .48;
+      ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(lx, ly - 5, Math.max(4, Math.min(9, sw * .28)), Math.PI, 0); ctx.stroke();
+      ctx.fillStyle = "#ffd75e";
+      ctx.fillRect(lx - Math.max(5, sw * .3), ly - 5, Math.max(10, sw * .6), Math.max(8, Math.min(15, sh * .14)));
+      ctx.lineWidth = 1;
+      ctx.fillText("鑰匙門 " + g.lock, sx - 4, sy - 6);
+      if (g === sel) { ctx.strokeStyle = "#fff0a8"; ctx.lineWidth = 2; ctx.strokeRect(sx - 2, sy - 2, sw + 4, sh + 4); ctx.lineWidth = 1; }
+      return;
+    }
+    ctx.fillStyle = g === sel ? "#8a6ab5" : "#5e4a85";
+    ctx.fillRect(sx, sy, sw, sh);
+    const tw = 70 * scale;
+    const tx = g.side === "left" ? sx - tw : sx + sw;
+    ctx.fillStyle = "rgba(220,170,255,.18)";
+    ctx.fillRect(tx, sy, tw, sh);
+    ctx.fillStyle = "#dcaaff";
+    const ax = g.side === "left" ? sx - 8 : sx + sw + 8, dir = g.side === "left" ? 1 : -1;
+    const ay = sy + sh - 12;
+    ctx.beginPath(); ctx.moveTo(ax + dir * 7, ay); ctx.lineTo(ax - dir * 3, ay - 6); ctx.lineTo(ax - dir * 3, ay + 6);
+    ctx.closePath(); ctx.fill();
+    ctx.fillText("G" + i + "(" + (g.side === "left" ? "左開" : "右開") + ")", sx, sy - 5);
+    if (g === sel) { ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2; ctx.strokeRect(sx - 2, sy - 2, sw + 4, sh + 4); ctx.lineWidth = 1; }
+  });
+  // 道具（菱形）
+  data.items.forEach((it, i) => {
+    const [sx, sy0] = W2S(it.x, it.y);
+    const sy = sy0 - 16;
+    const c = ITEM_COL[it.type] || "#fff";
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.moveTo(sx, sy - 9); ctx.lineTo(sx + 7, sy); ctx.lineTo(sx, sy + 9); ctx.lineTo(sx - 7, sy);
+    ctx.closePath(); ctx.fill();
+    if (it === sel) { ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1; }
+    const lbl = it.type === "char" ? (CARD_NAMES[it.card] || "角色?") : it.type === "skin" ? (SKIN_NAMES[it.skin] || "造型") : "鑰匙" + (it.id || "?");
+    ctx.fillText(lbl, sx - 12, sy - 13);
+  });
+  // 敵人
+  data.spawns.forEach((e, i) => {
+    const [sx, sy] = W2S(e.x, e.y);
+    const c = KC[e.kind] || "#fff";
+    if (e.range) { ctx.strokeStyle = c; ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(sx - e.range * scale, sy - 2); ctx.lineTo(sx + e.range * scale, sy - 2); ctx.stroke(); ctx.globalAlpha = 1; }
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(sx, sy - 9, e === sel ? 7 : 5, 0, 7); ctx.fill();
+    if (e === sel) { ctx.strokeStyle = "#ffd75e"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(sx, sy - 9, 10, 0, 7); ctx.stroke(); ctx.lineWidth = 1; }
+    ctx.fillText(e.kind + i, sx - 12, sy - 20);
+  });
+  (data.camzones || []).forEach((z, i) => {   // 攝影機框：紫色虛線框
+    const [sx, sy] = W2S(z.x, z.y);
+    const sw = z.w * scale, sh = z.h * scale;
+    ctx.strokeStyle = z === sel ? "#ffd75e" : "#b07df0";
+    ctx.lineWidth = z === sel ? 2.5 : 1.5;
+    ctx.setLineDash([10, 7]);
+    ctx.strokeRect(sx, sy, sw, sh);
+    ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    ctx.fillStyle = z === sel ? "#ffd75e" : "#b07df0";
+    ctx.fillText("🎥 攝影機框" + i + (z.secret ? "（隱藏區）" : ""), sx + 6, sy + 16);
+  });
+  drawHandles();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+// ---- 速度幽靈預覽：選取電梯/移動平台時，半透明平台以實際速度沿軌道來回跑 ----
+let pvT = 0, pvLast = 0, pvOn = false, pvSel = null;
+function pvTick(ts) {
+  if (!pvOn) return;
+  const dt = Math.min(0.05, (ts - pvLast) / 1000 || 0.016);
+  pvLast = ts; pvT += dt;
+  draw();
+  requestAnimationFrame(pvTick);
+}
+function updatePreview() {
+  const want = sel && (data.elevators.includes(sel) || data.movers.includes(sel));
+  if (sel !== pvSel) { pvT = 0; pvSel = sel; }   // 換選取重頭跑
+  if (want && !pvOn) { pvOn = true; pvLast = performance.now(); requestAnimationFrame(pvTick); }
+  else if (!want) pvOn = false;
+}
+function pvPos(len, speed) {   // 0→len 停 0.6s →0 停 0.6s 循環；回傳 {p, dir}
+  const T = len / Math.max(1, speed), P = 0.6, cyc = 2 * T + 2 * P;
+  let t = pvT % cyc;
+  if (t < T) return { p: t / T * len, dir: 1 };
+  t -= T; if (t < P) return { p: len, dir: 0 };
+  t -= P; if (t < T) return { p: len - t / T * len, dir: -1 };
+  return { p: 0, dir: 0 };
+}
+function drawGhostPlat(sx, sy, sw, dir, axis) {   // 半透明青色平台＋行進箭頭（螢幕座標）
+  ctx.globalAlpha = 0.75;
+  ctx.fillStyle = "#7fe7ff";
+  ctx.fillRect(sx, sy - 2, sw, 5);
+  if (dir) {
+    const cx = sx + sw / 2, cy = sy;
+    ctx.beginPath();
+    if (axis === "y") {   // 上下行進箭頭
+      ctx.moveTo(cx, cy + dir * 16); ctx.lineTo(cx - 8, cy + dir * 4); ctx.lineTo(cx + 8, cy + dir * 4);
+    } else {              // 左右行進箭頭
+      ctx.moveTo(cx + dir * 16, cy); ctx.lineTo(cx + dir * 4, cy - 8); ctx.lineTo(cx + dir * 4, cy + 8);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function rectOf(o) {   // 可拖拉調整大小的物件矩形（電梯用 top/bottom；移動平台僅寬度）
+  if (!o) return null;
+  if (data.elevators.includes(o)) return { x: o.x, y: o.top, w: o.w, h: o.bottom - o.top, elev: true };
+  if (data.movers.includes(o)) return { x: o.x, y: o.y - 7 / scale, w: o.w, h: 14 / scale, mover: true };
+  if (typeof o.w === "number" && typeof o.h === "number") return { x: o.x, y: o.y, w: o.w, h: o.h };
+  return null;
+}
+function resizeHandleAt(o, wx, wy) {
+  const r = rectOf(o);
+  if (!r) return null;
+  const tol = 10 / scale;
+  const inX = wx > r.x - tol && wx < r.x + r.w + tol;
+  const inY = wy > r.y - tol && wy < r.y + r.h + tol;
+  let hx = 0, hy = 0;
+  if (Math.abs(wx - r.x) < tol && inY) hx = -1;
+  else if (Math.abs(wx - r.x - r.w) < tol && inY) hx = 1;
+  if (Math.abs(wy - r.y) < tol && inX) hy = -1;
+  else if (Math.abs(wy - r.y - r.h) < tol && inX) hy = 1;
+  if (r.mover) hy = 0;
+  if (!hx && !hy) return null;
+  return { hx, hy };
+}
+function drawHandles() {   // 選取物件的 8 向把手（螢幕固定 7px 方塊）
+  const r = rectOf(sel);
+  if (!r) return;
+  const hs = 7;   // 螢幕像素（draw() 全程螢幕座標——先前誤用世界座標畫，手柄全隱形）
+  const pts = r.mover
+    ? [[r.x, r.y + r.h / 2], [r.x + r.w, r.y + r.h / 2]]
+    : [[r.x, r.y], [r.x + r.w / 2, r.y], [r.x + r.w, r.y],
+       [r.x, r.y + r.h / 2], [r.x + r.w, r.y + r.h / 2],
+       [r.x, r.y + r.h], [r.x + r.w / 2, r.y + r.h], [r.x + r.w, r.y + r.h]];
+  for (const [px, py] of pts) {
+    const [sx, sy] = W2S(px, py);
+    ctx.fillStyle = "#ffd75e";
+    ctx.fillRect(sx - hs / 2, sy - hs / 2, hs, hs);
+    ctx.strokeStyle = "#1a2233";
+    ctx.strokeRect(sx - hs / 2, sy - hs / 2, hs, hs);
+  }
+}
+
+function hitTest(wx, wy) {
+  const tol = 12 / scale;
+  for (let i = (data.camzones || []).length - 1; i >= 0; i--) {   // 攝影機框：只有邊線可選取
+    const z = data.camzones[i];
+    const inX = wx > z.x - tol && wx < z.x + z.w + tol, inY = wy > z.y - tol && wy < z.y + z.h + tol;
+    if (((Math.abs(wx - z.x) < tol || Math.abs(wx - z.x - z.w) < tol) && inY) ||
+        ((Math.abs(wy - z.y) < tol || Math.abs(wy - z.y - z.h) < tol) && inX)) return { t: "camzone", o: z };
+  }
+  for (let i = data.items.length - 1; i >= 0; i--) {
+    const it = data.items[i];
+    if (Math.abs(wx - it.x) < tol && Math.abs(wy - (it.y - 16 / scale)) < tol + 12 / scale) return { t: "item", o: it };
+  }
+  for (let i = data.ghosts.length - 1; i >= 0; i--) {
+    const g = data.ghosts[i];
+    if (wx > g.x - tol / 2 && wx < g.x + g.w + tol / 2 && wy > g.y - tol / 2 && wy < g.y + g.h + tol / 2) return { t: "ghost", o: g };
+  }
+  for (let i = data.breakables.length - 1; i >= 0; i--) {
+    const b = data.breakables[i];
+    if (wx > b.x - tol / 2 && wx < b.x + b.w + tol / 2 && wy > b.y - tol / 2 && wy < b.y + b.h + tol / 2) return { t: "breakable", o: b };
+  }
+  for (let i = data.gates.length - 1; i >= 0; i--) {
+    const g = data.gates[i];
+    if (wx > g.x - tol / 2 && wx < g.x + g.w + tol / 2 && wy > g.y - tol / 2 && wy < g.y + g.h + tol / 2) return { t: "gate", o: g };
+  }
+  // 已選取移動平台的終點控制把手優先
+  if (sel && data.movers.includes(sel)) {
+    const ex = sel.axis === "x" ? sel.x + sel.dist : sel.x;
+    const ey = sel.axis === "y" ? sel.y + sel.dist : sel.y;
+    if (wx > ex - tol / 2 && wx < ex + sel.w + tol / 2 && Math.abs(wy - ey) < tol * 1.4) {
+      return { t: "moverEnd", o: sel };
+    }
+  }
+  for (let i = data.movers.length - 1; i >= 0; i--) {
+    const m = data.movers[i];
+    if (wx > m.x - tol / 2 && wx < m.x + m.w + tol / 2 && Math.abs(wy - m.y) < tol) return { t: "mover", o: m };
+  }
+  // 未選取時也可以直接抓住半透明的終點平台
+  for (let i = data.movers.length - 1; i >= 0; i--) {
+    const m = data.movers[i];
+    const ex = m.axis === "x" ? m.x + m.dist : m.x;
+    const ey = m.axis === "y" ? m.y + m.dist : m.y;
+    if (wx > ex - tol / 2 && wx < ex + m.w + tol / 2 && Math.abs(wy - ey) < tol * 1.4) {
+      return { t: "moverEnd", o: m };
+    }
+  }
+  for (let i = data.spawns.length - 1; i >= 0; i--) {
+    const e = data.spawns[i];
+    if (Math.abs(wx - e.x) < tol && Math.abs(wy - e.y + 9) < tol + 14) return { t: "spawn", o: e };
+  }
+  for (let i = data.checkpoints.length - 1; i >= 0; i--) {
+    const c = data.checkpoints[i];
+    if (Math.abs(wx - c.x) < tol && wy > c.y - 26 / scale && wy < c.y + tol) return { t: "cp", o: c };
+  }
+  if (data.playerStart && Math.abs(wx - data.playerStart.x) < tol &&
+      wy > data.playerStart.y - 30 / scale && wy < data.playerStart.y + tol) return { t: "pstart", o: data.playerStart };
+  for (let i = data.elevators.length - 1; i >= 0; i--) {
+    const e = data.elevators[i];
+    if (wx > e.x - tol && wx < e.x + e.w + tol && wy > e.top - tol && wy < e.bottom + tol &&
+        (Math.abs(wx - e.x) < tol || Math.abs(wx - e.x - e.w) < tol || Math.abs(wy - e.bottom) < 26 / scale)) return { t: "elev", o: e };
+  }
+  for (let i = data.solids.length - 1; i >= 0; i--) {
+    const s = data.solids[i];
+    if (wx > s.x - tol / 2 && wx < s.x + s.w + tol / 2 && wy > s.y - tol / 2 && wy < s.y + Math.max(s.h, 8) + tol / 2) return { t: "solid", o: s };
+  }
+  return null;
+}
+
+cv.addEventListener("mousedown", ev => {
+  const [wx, wy] = S2W(ev.offsetX, ev.offsetY + BAR_H());
+  if (mode !== "select") { addAt(wx, wy); return; }
+  // 選取中的物件：8 向手柄優先（邊/角直接拖拉調整大小）
+  if (sel) {
+    const h = resizeHandleAt(sel, wx, wy);
+    if (h) { pushUndo(); drag = { type: "resize", hx: h.hx, hy: h.hy }; return; }
+  }
+  const hit = hitTest(wx, wy);
+  if (hit) {
+    sel = hit.o; showProps();
+    pushUndo();
+    if (hit.t === "moverEnd") {
+      const ex = sel.axis === "x" ? sel.x + sel.dist : sel.x;
+      const ey = sel.axis === "y" ? sel.y + sel.dist : sel.y;
+      drag = { type: "moverEnd", offset: sel.axis === "x" ? wx - ex : wy - ey };
+      cv.style.cursor = sel.axis === "x" ? "ew-resize" : "ns-resize";
+    } else {
+      drag = { type: "move", dx: wx - (sel.x || 0), dy: wy - (sel.y || sel.top || 0) };
+    }
+  } else {
+    sel = null; showProps();
+    drag = { type: "pan", sx: ev.clientX, sy: ev.clientY, ox0: ox, oy0: oy };
+    cv.style.cursor = "grabbing";
+  }
+  draw();
+});
+addEventListener("mousemove", ev => {
+  const r = cv.getBoundingClientRect();
+  const [wx, wy] = S2W(ev.clientX - r.left, ev.clientY - r.top + BAR_H());
+  hoverXY = [Math.round(wx), Math.round(wy)];
+  document.getElementById("status").textContent =
+    `座標 ${hoverXY[0]}, ${hoverXY[1]}　縮放 ${(scale * 100) | 0}%　跳台可跳高≈195 距≈280`;
+  if (!drag) {
+    if (mode === "select" && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom) {
+      let cur = null;
+      if (sel) {
+        const h = resizeHandleAt(sel, wx, wy);
+        if (h) cur = h.hx && h.hy ? (h.hx * h.hy > 0 ? "nwse-resize" : "nesw-resize") : (h.hx ? "ew-resize" : "ns-resize");
+      }
+      if (!cur) {
+        const hit = hitTest(wx, wy);
+        cur = hit?.t === "moverEnd" ? (hit.o.axis === "x" ? "ew-resize" : "ns-resize") : "grab";
+      }
+      cv.style.cursor = cur;
+    }
+    return;
+  }
+  if (drag.type === "pan") { ox = drag.ox0 - (ev.clientX - drag.sx) / scale; oy = drag.oy0 - (ev.clientY - drag.sy) / scale; }
+  else if (drag.type === "move" && sel) {
+    if (data.spawns.includes(sel) || data.checkpoints.includes(sel) || data.items.includes(sel) || sel === data.playerStart) { sel.x = snap(wx - drag.dx); sel.y = nearestFloorOrPlat(snap(wy)); }
+    else if (data.elevators.includes(sel)) { sel.x = snap(wx - drag.dx); }
+    else { sel.x = snap(wx - drag.dx); sel.y = snap(wy - drag.dy); }
+    showProps();
+  }
+  else if (drag.type === "moverEnd" && sel && data.movers.includes(sel)) {
+    sel.dist = sel.axis === "x" ? snap(wx - drag.offset - sel.x) : snap(wy - drag.offset - sel.y);
+    showProps();
+  }
+  else if (drag.type === "resize" && sel) {
+    const elev = data.elevators.includes(sel);
+    const minW = 20, minH = 10;
+    if (drag.hx < 0) { const rr = sel.x + sel.w; sel.x = Math.min(snap(wx), rr - minW); sel.w = rr - sel.x; }
+    if (drag.hx > 0) sel.w = Math.max(minW, snap(wx) - sel.x);
+    if (elev) {
+      if (drag.hy < 0) sel.top = Math.min(snap(wy), sel.bottom - 60);
+      if (drag.hy > 0) sel.bottom = Math.max(snap(wy), sel.top + 60);
+    } else if (typeof sel.h === "number") {
+      if (drag.hy < 0) { const bb = sel.y + sel.h; sel.y = Math.min(snap(wy), bb - minH); sel.h = bb - sel.y; }
+      if (drag.hy > 0) sel.h = Math.max(minH, snap(wy) - sel.y);
+    }
+    showProps();
+  }
+  draw();
+});
+addEventListener("mouseup", () => { if (drag && drag.type !== "pan") save(); drag = null; cv.style.cursor = "grab"; });
+cv.addEventListener("wheel", ev => {
+  ev.preventDefault();
+  const [wx, wy] = S2W(ev.offsetX, ev.offsetY + BAR_H());
+  scale = Math.min(3, Math.max(0.04, scale * (ev.deltaY < 0 ? 1.15 : 1 / 1.15)));
+  ox = wx - ev.offsetX / scale; oy = wy - ev.offsetY / scale;
+  draw();
+}, { passive: false });
+
+// 敵人/存檔點放置時吸附到最近樓層或跳台頂
+function nearestFloorOrPlat(y) {
+  let best = nearestFloor(y), bd = Math.abs(best - y);
+  for (const s of data.solids) if (s.h <= 30 && Math.abs(s.y - y) < bd) { best = s.y; bd = Math.abs(s.y - y); }
+  return best;
+}
+
+function addAt(wx, wy) {
+  pushUndo();
+  const x = snap(wx), y = snap(wy);
+  let o;
+  if (mode === "plat") { o = { x: x - 60, y, w: 130, h: 16 }; data.solids.push(o); }
+  else if (mode === "slab") { o = { x: x - 200, y: nearestFloor(y), w: 400, h: 90 }; data.solids.push(o); }
+  else if (mode === "wall") { o = { x, y: y - 250, w: 40, h: 500 }; data.solids.push(o); }
+  else if (mode === "breakwall") { o = { x: x - 40, y: y - 240, w: 80, h: 240, type: "wall", hp: 6, drop: "" }; data.breakables.push(o); }
+  else if (mode === "ghostwall") { o = { x: x - 40, y: y - 250, w: 80, h: 250 }; data.ghosts.push(o); }
+  else if (mode === "crate") { const fy = nearestFloorOrPlat(y); o = { x: x - 70, y: fy - 110, w: 140, h: 110, type: "crate", hp: 3, drop: "" }; data.breakables.push(o); }
+  else if (mode === "elev") {
+    const bot = nearestFloor(y); const ti = FLOORS.indexOf(bot);
+    o = { x: x - 70, w: 140, top: FLOORS[Math.min(ti + 1, FLOORS.length - 1)], bottom: bot, speed: 230, start: "bottom" };
+    data.elevators.push(o);
+  }
+  else if (mode === "cp") { o = { x, y: nearestFloorOrPlat(y) }; data.checkpoints.push(o); }
+  else if (mode === "moverh") { o = { x: x - 90, y, w: 180, axis: "x", dist: 260, speed: 120, start: "left" }; data.movers.push(o); }
+  else if (mode === "moverv") { o = { x: x - 90, y, w: 180, axis: "y", dist: -220, speed: 110, start: "bottom" }; data.movers.push(o); }
+  else if (mode === "item") { o = { x, y: nearestFloorOrPlat(y), type: "key", id: "K1" }; data.items.push(o); }
+  else if (mode === "gate") { const fy2 = nearestFloor(y); o = { x, y: fy2 - 230, w: 40, h: 230, side: "left" }; data.gates.push(o); }
+  else if (mode === "keydoor") { const fy2 = nearestFloor(y); o = { x, y: fy2 - 230, w: 60, h: 230, lock: "K1" }; data.gates.push(o); }
+  else if (mode === "camzone") { o = { x: x - 480, y: y - 270, w: 960, h: 540 }; (data.camzones ||= []).push(o); }
+  else if (mode === "pstart") { o = { x, y: nearestFloorOrPlat(y) }; data.playerStart = o; }   // 全地圖唯一：重放＝移動
+  else { o = { x, y: nearestFloorOrPlat(y), range: 90, kind: mode }; data.spawns.push(o); }
+  sel = o; setMode("select"); save(); draw(); showProps();
+}
+
+function listOf(o) {
+  if (o === data.playerStart) return ["pstart", null];
+  if (data.solids.includes(o)) return ["solids", data.solids];
+  if (data.elevators.includes(o)) return ["elevators", data.elevators];
+  if (data.checkpoints.includes(o)) return ["checkpoints", data.checkpoints];
+  if (data.movers.includes(o)) return ["movers", data.movers];
+  if (data.breakables.includes(o)) return ["breakables", data.breakables];
+  if (data.ghosts.includes(o)) return ["ghosts", data.ghosts];
+  if (data.gates.includes(o)) return ["gates", data.gates];
+  if ((data.camzones || []).includes(o)) return ["camzones", data.camzones];
+  if (data.items.includes(o)) return ["items", data.items];
+  return ["spawns", data.spawns];
+}
+
+function showProps() {
+  updatePreview();   // 選取電梯/移動平台時啟動速度幽靈預覽
+  const p = document.getElementById("props");
+  if (!sel) { p.style.display = "none"; return; }
+  const [kind, list] = listOf(sel);
+  const title = { solids: sel.h <= 30 ? "跳台 P" + data.solids.filter(s => s.h <= 30).indexOf(sel) : "樓板/牆",
+                  elevators: "電梯 E" + (data.elevators.indexOf(sel) + 1) + "｜speed=速度px/s(空=230) start=初始停靠端（載人駛向另一端，閒置2秒返回）",
+                  checkpoints: "存檔點 CP" + data.checkpoints.indexOf(sel),
+                  movers: "移動平台 M" + data.movers.indexOf(sel) + "｜start=起始端（絕對方位：垂直台上/下、水平台左/右）",
+                  breakables: sel.type === "crate" ? "可破壞箱｜drop 可填 credit:100、key:K1、skin:swim、card:7、heal；留空不掉落" : "可破壞牆｜使用 tile_10 裂紋牆素材；drop 留空即不掉落",
+                  ghosts: "幽靈牆｜外觀與普通牆相同，無碰撞；玩家進入後淡出消失",
+                  gates: sel.lock ? "鑰匙門 D" + data.gates.indexOf(sel) + "｜lock 必須和鑰匙道具的 id 相同" : "單向門 G" + data.gates.indexOf(sel) + "（side=可開啟側）",
+                  items: "道具｜key鑰匙→填id並在電梯lock填同編號；char角色：7日鞠 8風華 9三千留",
+                  camzones: "攝影機框 Z" + (data.camzones || []).indexOf(sel) + "｜玩家在框內時鏡頭鉗在框內（藏隱藏地圖用），進出時鏡頭飛行過渡",
+                  pstart: "玩家起點｜新遊戲（無存檔點）的出生與重生位置；未放置時預設 x120 L0 地板",
+                  spawns: "敵人 " + sel.kind + data.spawns.indexOf(sel) + "｜sight=偵測水平距離 sightV=偵測垂直半高 atk=開火距離（世界像素，0/留空=兵種預設；range 超出平台會在邊緣折返不滯空）" }[kind];
+  let h = `<h3>${title}</h3>`;
+  const SELECTS = { kind: Object.keys(KC), axis: ["x", "y"], type: ["key", "char", "skin"], side: ["left", "right"],
+                    start: ["bottom", "top"], card: Object.keys(CARD_NAMES), skin: Object.keys(SKIN_NAMES) };
+  const OPT_LABEL = { card: v => v + " " + CARD_NAMES[v], skin: v => v + "（" + SKIN_NAMES[v] + "）" };
+  let fields = Object.keys(sel).filter(f => f !== "c");
+  if (kind === "breakables" && !("drop" in sel)) fields.push("drop");
+  if (kind === "spawns") {                                               // 偵測/開火距離覆寫（0=用兵種預設）
+    if (!("sight" in sel)) fields.push("sight");
+    if (!("sightV" in sel)) fields.push("sightV");
+    if (!("atk" in sel)) fields.push("atk");
+  }
+  if (kind === "elevators") {
+    if (!("lock" in sel)) fields.push("lock");     // 電梯鎖（空字串=無鎖）
+    if (!("speed" in sel)) fields.push("speed");   // 速度 px/s（0/留空=預設 230）
+    if (!("start" in sel)) fields.push("start");   // 初始停靠端兼待機返回端（缺省 bottom）
+  }
+  if (kind === "movers" && !("start" in sel)) fields.push("start");   // 起始端（絕對方位；缺省=放置點）
+  if (kind === "camzones" && !("secret" in sel)) fields.push("secret");   // secret=1：永久不顯示在小地圖
+  if (kind === "items") {
+    if (sel.type === "char" && !("card" in sel)) fields.push("card");    // 7=日鞠 8=風華 9=三千留
+    if (sel.type === "skin" && !("skin" in sel)) fields.push("skin");
+    if (sel.type === "key" && !("id" in sel)) fields.push("id");
+  }
+  for (const f of fields) {
+    const choices = kind === "breakables" && f === "type" ? ["wall", "crate"]
+                  : kind === "movers" && f === "start" ? (sel.axis === "y" ? ["bottom", "top"] : ["left", "right"])
+                  : SELECTS[f];
+    if (choices) {
+      h += `<label>${f} <select data-f="${f}">${choices.map(k => `<option value="${k}" ${String(k) === String(sel[f]) ? "selected" : ""}>${OPT_LABEL[f] ? OPT_LABEL[f](k) : k}</option>`).join("")}</select></label>`;
+    } else if (typeof sel[f] === "string" || f === "lock" || f === "id" || f === "skin") {
+      h += `<label>${f} <input type="text" data-f="${f}" value="${sel[f] ?? ""}"></label>`;
+    } else {
+      const dv = sel[f] ?? (f === "speed" && kind === "elevators" ? 230 : 0);   // 電梯速度：空欄顯示實際生效的預設 230
+      h += `<label><span class="scrub" data-f="${f}" title="左右拖曳調值">${f} ⇔</span> <input type="number" step="10" data-f="${f}" value="${dv}"></label>`;
+    }
+  }
+  h += `<button class="del">刪除 (Del)</button>`;
+  p.innerHTML = h; p.style.display = "block";
+  p.querySelectorAll("input,select").forEach(inp => inp.onchange = () => {
+    pushUndo();
+    const v = inp.type === "number" ? +inp.value : inp.value;
+    if (v === "" || (inp.dataset.f === "lock" && !v) ||
+        (inp.dataset.f === "speed" && kind === "elevators" && !v) ||   // 電梯 speed 0=回預設 230（movers 的 speed 不可刪）
+        ((inp.dataset.f === "sight" || inp.dataset.f === "sightV" || inp.dataset.f === "atk") && !v)) delete sel[inp.dataset.f];
+    else sel[inp.dataset.f] = inp.dataset.f === "card" ? +v : v;
+    if (kind === "items" && inp.dataset.f === "type") { // 道具換類型 → 清掉不相干欄位再重建
+      if (v !== "char") delete sel.card;
+      if (v !== "skin") delete sel.skin;
+      if (v !== "key") delete sel.id;
+      if (v === "char") sel.card = sel.card || 7;
+      if (v === "skin") sel.skin = sel.skin || "swim";
+      if (v === "key") sel.id = sel.id || "K1";
+      showProps();
+    }
+    save(); draw();
+  });
+  // 拖曳調值：按住欄名左右拖（每 4px = 10）
+  p.querySelectorAll(".scrub").forEach(sp => {
+    sp.style.cursor = "ew-resize"; sp.style.userSelect = "none"; sp.style.color = "#8fb4ff";
+    sp.onmousedown = ev => {
+      ev.preventDefault();
+      pushUndo();
+      const f = sp.dataset.f, x0 = ev.clientX, v0 = sel[f] || 0;
+      const mv = e2 => { sel[f] = v0 + Math.round((e2.clientX - x0) / 4) * 10;
+        const inp = p.querySelector(`input[data-f="${f}"]`); if (inp) inp.value = sel[f]; draw(); };
+      const up = () => { removeEventListener("mousemove", mv); removeEventListener("mouseup", up); save(); };
+      addEventListener("mousemove", mv); addEventListener("mouseup", up);
+    };
+  });
+  p.querySelector(".del").onclick = del;
+}
+
+function del() {
+  if (!sel) return;
+  pushUndo();
+  if (sel === data.playerStart) delete data.playerStart;
+  else { const [, list] = listOf(sel); list.splice(list.indexOf(sel), 1); }
+  sel = null; save(); draw(); showProps();
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll("button[data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === m));
+  cv.style.cursor = m === "select" ? "grab" : "crosshair";
+  updateModeStatus();
+}
+document.querySelectorAll("button[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+document.getElementById("undoB").onclick = undo;
+document.getElementById("redoB").onclick = redo;
+document.getElementById("duplicateB").onclick = duplicateSelected;
+document.getElementById("fitB").onclick = fitView;
+document.getElementById("sightB").onclick = function () { showSight = !showSight; this.classList.toggle("on", showSight); this.setAttribute("aria-pressed", showSight); draw(); updateModeStatus(); };
+function exportMap() {
+  const j = JSON.stringify(data, null, 1);
+  navigator.clipboard?.writeText(j).catch(() => {});
+  const url = URL.createObjectURL(new Blob([j], { type: "application/json" }));
+  const a = document.createElement("a"); a.href = url; a.download = "map_edit.json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000); notify("已匯出 map_edit.json，並嘗試複製到剪貼簿");
+}
+function importMapText(j) {
+  try {
+    const d = JSON.parse(j); if (!d || !Array.isArray(d.solids)) throw new Error();
+    pushUndo(); data = d; data.movers ||= []; data.items ||= []; data.gates ||= []; data.breakables ||= []; data.ghosts ||= []; data.elevators ||= []; data.checkpoints ||= []; data.spawns ||= [];
+    sel = null; save(); draw(); showProps(); notify("JSON 匯入完成");
+  } catch { notify("JSON 格式無效"); }
+}
+document.getElementById("exportB").onclick = exportMap;
+document.getElementById("importB").onclick = () => document.getElementById("importFile").click();
+document.getElementById("importFile").onchange = async ev => {
+  const file = ev.target.files[0]; if (!file) return; importMapText(await file.text()); ev.target.value = "";
+};
+document.getElementById("resetB").onclick = () => {
+  if (!confirm("放棄所有編輯，還原成遊戲目前配置？")) return;
+  pushUndo(); data = JSON.parse(JSON.stringify(INITIAL)); sel = null; save(); draw(); showProps();
+};
+
+
+const MODE_NAMES={select:"選取",camzone:"新增攝影機框",pstart:"放置玩家起點",plat:"新增跳台",slab:"新增樓板",wall:"新增牆",breakwall:"新增可破壞牆",ghostwall:"新增幽靈牆",crate:"新增可破壞箱子",elev:"新增電梯",cp:"新增存檔點",moverh:"新增水平移動台",moverv:"新增垂直移動台",item:"新增道具",gate:"新增單向門",keydoor:"新增鑰匙門",pmc:"新增 PMC",pmc2:"新增 PMC2",sgtrooper:"新增霰彈兵",shield:"新增盾兵",turret:"新增砲台",rocket:"新增火箭兵",grenadier:"新增手雷兵"};
+let toastTimer;
+function notify(message){const t=document.getElementById("toast");t.textContent=message;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),1800)}
+function updateHistoryButtons(){const u=document.getElementById("undoB"),r=document.getElementById("redoB");if(u)u.disabled=!undoStack.length;if(r)r.disabled=!redoStack.length}
+function updateModeStatus(){const s=document.getElementById("modeStatus");if(s)s.textContent=(MODE_NAMES[mode]||mode)+"模式"}
+function fitView(){const a=[...data.solids,...data.breakables,...data.ghosts,...data.elevators.map(e=>({x:e.x,y:e.top,w:e.w,h:e.bottom-e.top})),...data.checkpoints,...data.spawns,...data.movers,...data.items,...data.gates];if(!a.length)return;const x0=Math.min(...a.map(o=>o.x||0)),y0=Math.min(...a.map(o=>o.y??o.top??0)),x1=Math.max(...a.map(o=>(o.x||0)+(o.w||0))),y1=Math.max(...a.map(o=>(o.y??o.bottom??0)+(o.h||0))),p=90,aw=innerWidth-SIDE_W(),ah=innerHeight-BAR_H()-34;scale=Math.max(.04,Math.min(3,Math.min((aw-p*2)/Math.max(1,x1-x0),(ah-p*2)/Math.max(1,y1-y0))));ox=x0-p/scale;oy=y0-p/scale;draw();notify("已顯示完整地圖")}
+function zoomBy(f){const cx=cv.width/2,cy=cv.height/2,[wx,wy]=S2W(cx,cy+BAR_H());scale=Math.max(.04,Math.min(3,scale*f));ox=wx-cx/scale;oy=wy-cy/scale;draw()}
+function duplicateSelected(){if(!sel)return notify("請先選取物件");if(sel===data.playerStart)return notify("玩家起點全地圖僅一個，不可複製");pushUndo();const[,list]=listOf(sel),copy=JSON.parse(JSON.stringify(sel));copy.x=(copy.x||0)+40;if("y" in copy)copy.y+=40;else if("top" in copy){copy.top+=40;copy.bottom+=40}list.push(copy);sel=copy;save();draw();showProps();notify("已複製選取物件")}
+function nudgeSelected(dx,dy){if(!sel){ox+=dx/scale;oy+=dy/scale;draw();return}pushUndo();if("x" in sel)sel.x+=dx;if("y" in sel)sel.y+=dy;else if("top" in sel){sel.top+=dy;sel.bottom+=dy}save();draw();showProps()}
+function openOverlay(id){document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("open"));const el=document.getElementById(id);el.classList.add("open");setTimeout(()=>el.querySelector("input,button")?.focus(),0)}
+function closeOverlays(){document.querySelectorAll(".overlay.open").forEach(o=>o.classList.remove("open"));cv.focus()}
+const shortcutRows=[["拖拉邊/角","選取物件後直接拖拉 8 向手柄調整大小（電梯拉上下端、移動平台拉左右端）"],["V","選取與移動"],["P / B / W","新增跳台 / 樓板 / 牆"],["R / Shift+W / X","新增可破壞牆 / 幽靈牆 / 可破壞箱"],["E / C / G / I","新增電梯 / 存檔點 / 單向門 / 道具"],["K / S","新增鑰匙門 / 放置玩家起點"],["H / Shift+H","新增水平 / 垂直移動台"],["Alt+1 … Alt+6","新增各類敵人"],["方向鍵","微調 10 px；Shift 為 50 px"],["Ctrl+D","複製選取物件"],["Delete","刪除選取物件"],["Ctrl+Z / Ctrl+Y","復原 / 重做"],["+ / − / F","放大 / 縮小 / 顯示全部"],["A","切換敵人感應範圍"],["Ctrl+S","立即儲存到瀏覽器"],["Ctrl+Shift+S / Ctrl+O","匯出 / 匯入 JSON"],["Ctrl+K","開啟指令面板"],["? / Esc","快捷鍵說明 / 取消"]];
+document.getElementById("shortcutGrid").innerHTML=shortcutRows.map(([k,d])=>`<div>${k.split(" / ").map(x=>`<kbd>${x}</kbd>`).join(" ")}</div><div class="desc">${d}</div>`).join("");
+const commands=[...Object.entries(MODE_NAMES).map(([id,name])=>({name,key:document.querySelector(`[data-mode="${id}"]`)?.dataset.shortcut||"",run:()=>setMode(id)})),{name:"顯示完整地圖",key:"F",run:fitView},{name:"切換感應範圍",key:"A",run:()=>document.getElementById("sightB").click()},{name:"復原",key:"Ctrl+Z",run:undo},{name:"重做",key:"Ctrl+Y",run:redo},{name:"複製選取物件",key:"Ctrl+D",run:duplicateSelected},{name:"匯出 JSON",key:"Ctrl+Shift+S",run:exportMap},{name:"匯入 JSON",key:"Ctrl+O",run:()=>document.getElementById("importFile").click()},{name:"還原初始配置",key:"",run:()=>document.getElementById("resetB").click()}];
+let commandIndex=0;
+function renderCommands(q=""){q=q.trim().toLowerCase();const list=commands.filter(c=>c.name.toLowerCase().includes(q));commandIndex=Math.min(commandIndex,Math.max(0,list.length-1));const el=document.getElementById("commandList");el.innerHTML=list.map((c,i)=>`<li><button class="${i===commandIndex?"active":""}" data-i="${commands.indexOf(c)}">${c.name}<span class="cmd-key">${c.key}</span></button></li>`).join("")||"<li>找不到相符指令</li>";el.querySelectorAll("button").forEach(b=>b.onclick=()=>{closeOverlays();commands[+b.dataset.i].run()})}
+function openCommands(){commandIndex=0;document.getElementById("commandInput").value="";renderCommands();openOverlay("commandOverlay")}
+document.getElementById("commandInput").oninput=e=>{commandIndex=0;renderCommands(e.target.value)};document.getElementById("commandInput").onkeydown=e=>{const bs=[...document.querySelectorAll("#commandList button")];if((e.key==="ArrowDown"||e.key==="ArrowUp")&&bs.length){e.preventDefault();commandIndex=(commandIndex+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length;renderCommands(e.target.value)}if(e.key==="Enter"){e.preventDefault();document.querySelector("#commandList button.active")?.click()}};
+document.getElementById("helpB").onclick=()=>openOverlay("helpOverlay");document.querySelectorAll(".close-overlay").forEach(b=>b.onclick=closeOverlays);document.querySelectorAll(".overlay").forEach(o=>o.onmousedown=e=>{if(e.target===o)closeOverlays()});
+document.addEventListener("keydown",e=>{const typing=/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName),k=e.key.toLowerCase(),mod=e.ctrlKey||e.metaKey;if(k==="escape"){e.preventDefault();if(document.querySelector(".overlay.open"))closeOverlays();else{sel=null;setMode("select");showProps();draw()}return}if(mod&&k==="k"){e.preventDefault();openCommands();return}if(!typing&&(e.key==="?"||(e.shiftKey&&e.key==="/"))){e.preventDefault();openOverlay("helpOverlay");return}if(typing||document.querySelector(".overlay.open"))return;let h=true;if((mod&&e.shiftKey&&k==="z")||(mod&&k==="y"))redo();else if(mod&&k==="z")undo();else if(mod&&e.shiftKey&&k==="s")exportMap();else if(mod&&k==="s"){save();notify("地圖已儲存")}else if(mod&&k==="o")document.getElementById("importFile").click();else if(mod&&k==="d")duplicateSelected();else if(e.key==="Delete"||e.key==="Backspace"){if(sel){del();notify("已刪除選取物件")}}else if(e.altKey&&/^[1-7]$/.test(e.key))setMode(["pmc","pmc2","sgtrooper","shield","turret","rocket","grenadier"][+e.key-1]);else if(k==="v"||k==="1")setMode("select");else if(k==="p")setMode("plat");else if(k==="b")setMode("slab");else if(k==="w")setMode(e.shiftKey?"ghostwall":"wall");else if(k==="r")setMode("breakwall");else if(k==="x")setMode("crate");else if(k==="e")setMode("elev");else if(k==="c")setMode("cp");else if(k==="h")setMode(e.shiftKey?"moverv":"moverh");else if(k==="i")setMode("item");else if(k==="g")setMode("gate");else if(k==="k")setMode("keydoor");else if(k==="z"&&!mod)setMode("camzone");else if(k==="s")setMode("pstart");else if(k==="a")document.getElementById("sightB").click();else if(k==="f")fitView();else if(e.key==="+"||e.key==="=")zoomBy(1.2);else if(e.key==="-"||e.key==="_")zoomBy(1/1.2);else if(e.key.startsWith("Arrow")){const n=e.shiftKey?50:10;nudgeSelected(e.key==="ArrowLeft"?-n:e.key==="ArrowRight"?n:0,e.key==="ArrowUp"?-n:e.key==="ArrowDown"?n:0)}else h=false;if(h){e.preventDefault();e.stopImmediatePropagation()}},true);
+updateHistoryButtons();updateModeStatus();
+fitCanvas();
+</script>
+</body>
+</html>
