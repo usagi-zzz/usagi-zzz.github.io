@@ -1827,7 +1827,7 @@ globalThis.OFFICIAL_MAP = {
   {
    "x": -340,
    "y": 340,
-   "range": -20,
+   "range": 20,
    "kind": "rocket"
   },
   {
@@ -2046,7 +2046,7 @@ globalThis.OFFICIAL_MAP = {
   {
    "x": -350,
    "y": 580,
-   "range": -20,
+   "range": 20,
    "kind": "rocket"
   }
  ],
