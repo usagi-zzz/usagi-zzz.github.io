@@ -2718,7 +2718,8 @@ function updateBoss(dt) {
     return;
   }
   if (!boss.active) {          // 在房內待命，玩家（從右側）越過門線才開戰（落閘）
-    if (player.x > BOSS_ROOM.left && player.x < BOSS_ROOM.triggerX && player.y <= F3_Y + 5) {
+    // teleT > 0：傳送黑幕中（如通關面板「繼續」搬人前）玩家仍站在房內，不得重新開戰
+    if (teleT <= 0 && player.x > BOSS_ROOM.left && player.x < BOSS_ROOM.triggerX && player.y <= F3_Y + 5) {
       boss.active = true; setGate(true); bossSetState("run");   // 需在房內（左牆以右）：西側秘密區不觸發
       showTut("boss");
       shakeT = Math.max(shakeT, 0.25);                             // 落閘震撼
