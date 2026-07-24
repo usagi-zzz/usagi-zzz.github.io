@@ -992,8 +992,8 @@ globalThis.OFFICIAL_MAP = {
    "h": 40
   },
   {
-   "x": 300,
-   "y": 600,
+   "x": -420,
+   "y": 580,
    "w": 110,
    "h": 50
   },
@@ -1113,9 +1113,9 @@ globalThis.OFFICIAL_MAP = {
   },
   {
    "x": -3110,
-   "y": 370,
+   "y": 320,
    "w": 40,
-   "h": 2130
+   "h": 2180
   },
   {
    "x": -2140,
@@ -1789,12 +1789,6 @@ globalThis.OFFICIAL_MAP = {
    "kind": "rocket"
   },
   {
-   "x": 320,
-   "y": 600,
-   "range": 90,
-   "kind": "rocket"
-  },
-  {
    "x": 8570,
    "y": 1080,
    "range": 90,
@@ -1831,9 +1825,9 @@ globalThis.OFFICIAL_MAP = {
    "kind": "rocket"
   },
   {
-   "x": -400,
+   "x": -340,
    "y": 340,
-   "range": 90,
+   "range": -20,
    "kind": "rocket"
   },
   {
@@ -2048,6 +2042,12 @@ globalThis.OFFICIAL_MAP = {
    "y": 3000,
    "range": 90,
    "kind": "pmc2"
+  },
+  {
+   "x": -350,
+   "y": 580,
+   "range": -20,
+   "kind": "rocket"
   }
  ],
  "movers": [
@@ -2196,7 +2196,7 @@ globalThis.OFFICIAL_MAP = {
    "x": -3110,
    "y": -110,
    "w": 40,
-   "h": 480
+   "h": 430
   }
  ],
  "camzones": [],
