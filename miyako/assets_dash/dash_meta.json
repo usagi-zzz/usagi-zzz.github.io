@@ -40,5 +40,12 @@
   "count": 5,
   "anchor": 0.5271,
   "feet": 0.9922
+ },
+ "koharu": {
+  "fw": 240,
+  "fh": 204,
+  "count": 5,
+  "anchor": 0.5021,
+  "feet": 0.9069
  }
 }

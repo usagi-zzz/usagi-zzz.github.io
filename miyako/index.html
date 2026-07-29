@@ -237,6 +237,34 @@ SKINS.shiroko = {
     run_shoot:    { fx: 0.65, fy: 0.46 },
   },
 };
+SKINS.koharu = {
+  label: "小春",
+  hint: "hintKoharu", hintAlways: true,   // 預設就送，但解鎖條件那行照樣顯示（哏）
+  fw: 240, fh: 289, feet: 0.9852, anchor: 0.3491, drawH: 147,   // 長槍把裁切框拉寬 → 幀內本體佔比低，drawH 校正回視覺身高≈138
+  anims: {
+    idle:         { file: "assets_miyako_koharu/idle.png",         count: 8,  fps: 8,  loop: true  },
+    run:          { file: "assets_miyako_koharu/run.png",          count: 8,  fps: 12, loop: true  },
+    rise:         { file: "assets_miyako_koharu/rise.png",         count: 4,  fps: 20, loop: false },
+    fall:         { file: "assets_miyako_koharu/fall.png",         count: 3,  fps: 12, loop: false },
+    land:         { file: "assets_miyako_koharu/land.png",         count: 4,  fps: 20, loop: false },
+    hurt:         { file: "assets_miyako_koharu/hurt.png",         count: 10, fps: 18, loop: false },
+    shoot:        { file: "assets_miyako_koharu/shoot.png",        count: 12, fps: 36, loop: true  },
+    crouch_idle:  { file: "assets_miyako_koharu/crouch_idle.png",  count: 8,  fps: 5,  loop: true  },
+    crouch_shoot: { file: "assets_miyako_koharu/crouch_shoot.png", count: 12, fps: 36, loop: true  },
+    run_shoot:    { file: "assets_miyako_koharu/run_shoot.png",    count: 10, fps: 12, loop: true  },
+  },
+  muzzle: {
+    shoot:        { fx: 0.9392, fy: 0.2921 },
+    crouch_shoot: { fx: 0.9000, fy: 0.5604 },
+    run_shoot:    { fx: 0.9779, fy: 0.2934 },
+  },
+  eject: {
+    shoot:        { fx: 0.62, fy: 0.46 },
+    crouch_shoot: { fx: 0.63, fy: 0.61 },
+    run_shoot:    { fx: 0.65, fy: 0.46 },
+  },
+};
+const FREE_SKINS = ["koharu"];   // 無條件贈送的造型（loadGame 後補進 unlocks）
 let currentSkin = "default";
 function applySkin(id) {
   const s = SKINS[id];
@@ -1136,6 +1164,7 @@ function loadGame() {
       }
     }
   } catch (e) {}
+  for (const id of FREE_SKINS) if (!unlocks.skins.includes(id)) unlocks.skins.push(id);   // 贈送造型：新檔/舊檔都補
 }
 const HITBOX_W = 36, HITBOX_H = 105, HITBOX_H_CROUCH = 70;   // ×0.7 同步縮小
 
@@ -3343,7 +3372,7 @@ const I18N = {
         pasteOpt: "貼上存檔碼（留空＝使用本機存檔）：", noSave: "沒有本機存檔，請先貼上存檔碼", loadSave: "讀檔", progress: "進度", cheat: "作弊碼", cheatPrompt: "輸入作弊碼：", cpRest: "休息・補給",
         keyCfg: "按鍵設定", keyPrompt: "按下新按鍵…（Esc 取消）", keyReset: "恢復預設", keyHint: "點擊項目後按下想綁定的按鍵；同鍵會自動從其他動作解除", kLeft: "向左移動", kRight: "向右移動", kJump: "跳躍", kCrouch: "蹲下", kShoot: "射擊", kReload: "換彈", kDash: "衝刺", kInteract: "互動", kCard: "支援卡",
         vpadCfg: "虛擬按鈕布局", vpadHint: "拖曳按鈕到喜歡的位置", vpadDone: "完成", vpadJoyZone: "左半屏＝浮動搖桿區（觸碰處起桿）",
-        hintDefault: "隱藏道具解鎖", hintConv: "商店累計消費 200C 解鎖", hintMomoi: "12分鐘內通關解鎖", hintMika: "通關一次解鎖", hintShiroko: "在地圖中尋找隱藏道具解鎖", recruitMystery: "在地圖中尋找發光道具解鎖", descFireline: "呼叫直升機對目標區投放多枚燃燒飛彈，觸地爆炸並引燃地面", descStun: "放出自走式無人機直線突進，命中敵人閃光引爆造成暈眩", descArea: "請求支援砲擊！閃光彈砸向瞄準點，範圍傷害並暈眩敵人", descSnipe: "觀測並標記目標，狙擊手延遲擊發；交替使用時傷害翻倍", sup4: "被動：每30秒回復1/4生命", sup5: "被動：每30秒獲得1/3護盾", sup6: "被動：每30秒+1/5護盾(15s)", sup7: "被動：Cost獲得×1.8", sup8: "被動：防禦力+30%", sup9: "被動：Cost+10%・全卡-1費",
+        hintDefault: "隱藏道具解鎖", hintConv: "商店累計消費 200C 解鎖", hintMomoi: "12分鐘內通關解鎖", hintMika: "通關一次解鎖", hintShiroko: "在地圖中尋找隱藏道具解鎖", hintKoharu: "不可以瑟瑟", recruitMystery: "在地圖中尋找發光道具解鎖", descFireline: "呼叫直升機對目標區投放多枚燃燒飛彈，觸地爆炸並引燃地面", descStun: "放出自走式無人機直線突進，命中敵人閃光引爆造成暈眩", descArea: "請求支援砲擊！閃光彈砸向瞄準點，範圍傷害並暈眩敵人", descSnipe: "觀測並標記目標，狙擊手延遲擊發；交替使用時傷害翻倍", sup4: "被動：每30秒回復1/4生命", sup5: "被動：每30秒獲得1/3護盾", sup6: "被動：每30秒+1/5護盾(15s)", sup7: "被動：Cost獲得×1.8", sup8: "被動：防禦力+30%", sup9: "被動：Cost+10%・全卡-1費",
         discTitle: "免責聲明", start: "！開始任務！",
         disc: "本作品為《蔚藍檔案 Blue Archive》之非官方粉絲二次創作，與 NEXON、Nexon Games、Yostar 無任何關聯；角色與世界觀之著作權皆屬原權利人所有。本專案內容由生成式 AI 工具產生或協助製作，範圍包括但不限於美術資產與程式資產。本作僅供學習交流之非商業用途。背景音樂：一般場景「Digital Lemonade」、Boss 戰「Five Armies」，皆為 Kevin MacLeod（incompetech.com）創作，採用 Creative Commons BY 4.0 授權（https://creativecommons.org/licenses/by/4.0/）。槍聲與爆炸音效來自 OpenGameArt（CC0 公共領域）。",
         opN1: "宮子",
@@ -3357,7 +3386,7 @@ const I18N = {
         pasteOpt: "Paste save code (leave empty to use local save):", noSave: "No local save. Paste a save code first.", loadSave: "Load", progress: "Progress", cheat: "Cheat Code", cheatPrompt: "Enter cheat code:", cpRest: "Rest & Resupply",
         keyCfg: "Key Bindings", keyPrompt: "Press a key... (Esc to cancel)", keyReset: "Reset Defaults", keyHint: "Click a row, then press the key to bind; the key is unbound from other actions", kLeft: "Move Left", kRight: "Move Right", kJump: "Jump", kCrouch: "Crouch", kShoot: "Shoot", kReload: "Reload", kDash: "Dash", kInteract: "Interact", kCard: "Card",
         vpadCfg: "Touch Button Layout", vpadHint: "Drag buttons anywhere you like", vpadDone: "Done", vpadJoyZone: "Left half = floating joystick zone",
-        hintDefault: "Unlock via hidden item", hintConv: "Spend 200C total at the shop", hintMomoi: "Clear the game within 12 minutes", hintMika: "Clear the game once", hintShiroko: "Find the hidden item somewhere in the map", recruitMystery: "Find the glowing item somewhere in the map", descFireline: "Calls a helicopter to drop incendiary missiles that explode on impact and ignite the ground", descStun: "Deploys a drone that charges forward and stuns enemies with a flash on impact", descArea: "Support fire! A flashbang hits the aim point, dealing area damage and stunning", descSnipe: "Marks the target for a delayed sniper shot; damage doubles on alternating uses", sup4: "Passive: heal 1/4 HP every 30s", sup5: "Passive: gain 1/3 shield every 30s", sup6: "Passive: +1/5 shield every 30s (15s)", sup7: "Passive: Cost gain x1.8", sup8: "Passive: +30% defense", sup9: "Passive: Cost +10% & all cards -1",
+        hintDefault: "Unlock via hidden item", hintConv: "Spend 200C total at the shop", hintMomoi: "Clear the game within 12 minutes", hintMika: "Clear the game once", hintShiroko: "Find the hidden item somewhere in the map", hintKoharu: "No lewd stuff", recruitMystery: "Find the glowing item somewhere in the map", descFireline: "Calls a helicopter to drop incendiary missiles that explode on impact and ignite the ground", descStun: "Deploys a drone that charges forward and stuns enemies with a flash on impact", descArea: "Support fire! A flashbang hits the aim point, dealing area damage and stunning", descSnipe: "Marks the target for a delayed sniper shot; damage doubles on alternating uses", sup4: "Passive: heal 1/4 HP every 30s", sup5: "Passive: gain 1/3 shield every 30s", sup6: "Passive: +1/5 shield every 30s (15s)", sup7: "Passive: Cost gain x1.8", sup8: "Passive: +30% defense", sup9: "Passive: Cost +10% & all cards -1",
         discTitle: "Disclaimer", start: "! MISSION START !",
         disc: "This is an unofficial fan work of Blue Archive, unaffiliated with NEXON, Nexon Games, or Yostar; all character and IP rights belong to their owners. Content of this project was produced or assisted by generative AI tools, including but not limited to art assets and program code. Non-commercial, for learning purposes only. Music: 'Digital Lemonade' (field) and 'Five Armies' (boss battle) by Kevin MacLeod (incompetech.com), licensed under Creative Commons BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Gunshot and explosion SFX from OpenGameArt (CC0 public domain).",
         opN1: "Miyako",
@@ -3371,7 +3400,7 @@ const I18N = {
         pasteOpt: "セーブコードを貼り付け（空欄＝ローカルセーブ使用）：", noSave: "ローカルセーブがありません。", loadSave: "ロード", progress: "進行度", cheat: "チートコード", cheatPrompt: "チートコードを入力：", cpRest: "休憩・補給",
         keyCfg: "キー設定", keyPrompt: "キーを押してください…（Escでキャンセル）", keyReset: "初期設定に戻す", keyHint: "項目をクリックして割り当てたいキーを押す；同じキーは他の操作から解除", kLeft: "左移動", kRight: "右移動", kJump: "ジャンプ", kCrouch: "しゃがむ", kShoot: "射撃", kReload: "リロード", kDash: "ダッシュ", kInteract: "調べる", kCard: "カード",
         vpadCfg: "仮想ボタン配置", vpadHint: "ボタンを好きな位置にドラッグ", vpadDone: "完了", vpadJoyZone: "左半分＝フローティングスティック",
-        hintDefault: "隠しアイテムで解放", hintConv: "ショップで累計200C消費で解放", hintMomoi: "12分以内クリアで解放", hintMika: "1回クリアで解放", hintShiroko: "マップのどこかの隠しアイテムで解放", recruitMystery: "マップのどこかで光るアイテムを探して解放", descFireline: "ヘリを要請し目標区域へ焼夷ミサイルを投下、着弾で爆発し地面を燃やす", descStun: "自走式ドローンが直進し、命中すると閃光で敵をスタンさせる", descArea: "支援射撃要請！閃光弾が着弾点で爆発、範囲ダメージとスタンを与える", descSnipe: "目標を観測・マーキングして狙撃手が遅延射撃；交互使用でダメージ2倍", sup4: "パッシブ：30秒毎にHP1/4回復", sup5: "パッシブ：30秒毎にシールド1/3獲得", sup6: "パッシブ：30秒毎に+1/5シールド(15秒)", sup7: "パッシブ：コスト獲得×1.8", sup8: "パッシブ：防御力+30%", sup9: "パッシブ：コスト+10%・全カード-1",
+        hintDefault: "隠しアイテムで解放", hintConv: "ショップで累計200C消費で解放", hintMomoi: "12分以内クリアで解放", hintMika: "1回クリアで解放", hintShiroko: "マップのどこかの隠しアイテムで解放", hintKoharu: "えっちなのはいけないと思います！", recruitMystery: "マップのどこかで光るアイテムを探して解放", descFireline: "ヘリを要請し目標区域へ焼夷ミサイルを投下、着弾で爆発し地面を燃やす", descStun: "自走式ドローンが直進し、命中すると閃光で敵をスタンさせる", descArea: "支援射撃要請！閃光弾が着弾点で爆発、範囲ダメージとスタンを与える", descSnipe: "目標を観測・マーキングして狙撃手が遅延射撃；交互使用でダメージ2倍", sup4: "パッシブ：30秒毎にHP1/4回復", sup5: "パッシブ：30秒毎にシールド1/3獲得", sup6: "パッシブ：30秒毎に+1/5シールド(15秒)", sup7: "パッシブ：コスト獲得×1.8", sup8: "パッシブ：防御力+30%", sup9: "パッシブ：コスト+10%・全カード-1",
         discTitle: "免責事項", start: "！作戦開始！",
         disc: "本作は『ブルーアーカイブ』の非公式ファン二次創作であり、NEXON・Nexon Games・Yostar とは一切関係ありません。キャラクター及び世界観の著作権は原権利者に帰属します。本作のコンテンツは生成AIツールにより制作・補助されており、その範囲はアート素材やプログラムコードを含みますがこれらに限りません。非営利・学習目的のみ。BGM：フィールド「Digital Lemonade」、ボス戦「Five Armies」（作曲：Kevin MacLeod / incompetech.com）。Creative Commons BY 4.0 ライセンス（https://creativecommons.org/licenses/by/4.0/）。銃声・爆発効果音は OpenGameArt（CC0 パブリックドメイン）。",
         opN1: "ミヤコ",
@@ -3385,7 +3414,7 @@ const I18N = {
         pasteOpt: "세이브 코드 붙여넣기 (비워두면 로컬 세이브 사용):", noSave: "로컬 세이브가 없습니다.", loadSave: "로드", progress: "진행도", cheat: "치트 코드", cheatPrompt: "치트 코드 입력:", cpRest: "휴식・보급",
         keyCfg: "키 설정", keyPrompt: "키를 눌러주세요… (Esc 취소)", keyReset: "기본값 복원", keyHint: "항목을 클릭한 뒤 바인딩할 키를 누르세요; 같은 키는 다른 동작에서 해제됩니다", kLeft: "왼쪽 이동", kRight: "오른쪽 이동", kJump: "점프", kCrouch: "앉기", kShoot: "사격", kReload: "재장전", kDash: "대시", kInteract: "상호작용", kCard: "카드",
         vpadCfg: "가상 버튼 배치", vpadHint: "버튼을 원하는 위치로 드래그", vpadDone: "완료", vpadJoyZone: "왼쪽 절반 = 플로팅 스틱 영역",
-        hintDefault: "숨겨진 아이템으로 해금", hintConv: "상점에서 누적 200C 소비 시 해금", hintMomoi: "12분 이내 클리어 시 해금", hintMika: "클리어 1회 시 해금", hintShiroko: "맵 어딘가의 숨겨진 아이템으로 해금", recruitMystery: "맵 어딘가의 빛나는 아이템을 찾아 해금", descFireline: "헬기를 요청해 목표 지역에 소이 미사일 투하, 착탄 시 폭발하고 지면을 불태운다", descStun: "자주식 드론이 직진 돌격, 명중 시 섬광 폭발로 적을 기절시킨다", descArea: "지원 사격 요청! 섬광탄이 조준점에 떨어져 범위 피해와 기절을 준다", descSnipe: "목표를 관측·마킹해 저격수가 지연 사격; 교대로 사용 시 피해 2배", sup4: "패시브: 30초마다 HP 1/4 회복", sup5: "패시브: 30초마다 실드 1/3 획득", sup6: "패시브: 30초마다 +1/5 실드(15초)", sup7: "패시브: 코스트 획득 x1.8", sup8: "패시브: 방어력 +30%", sup9: "패시브: 코스트 +10%·모든 카드 -1",
+        hintDefault: "숨겨진 아이템으로 해금", hintConv: "상점에서 누적 200C 소비 시 해금", hintMomoi: "12분 이내 클리어 시 해금", hintMika: "클리어 1회 시 해금", hintShiroko: "맵 어딘가의 숨겨진 아이템으로 해금", hintKoharu: "야한 건 안 돼요", recruitMystery: "맵 어딘가의 빛나는 아이템을 찾아 해금", descFireline: "헬기를 요청해 목표 지역에 소이 미사일 투하, 착탄 시 폭발하고 지면을 불태운다", descStun: "자주식 드론이 직진 돌격, 명중 시 섬광 폭발로 적을 기절시킨다", descArea: "지원 사격 요청! 섬광탄이 조준점에 떨어져 범위 피해와 기절을 준다", descSnipe: "목표를 관측·마킹해 저격수가 지연 사격; 교대로 사용 시 피해 2배", sup4: "패시브: 30초마다 HP 1/4 회복", sup5: "패시브: 30초마다 실드 1/3 획득", sup6: "패시브: 30초마다 +1/5 실드(15초)", sup7: "패시브: 코스트 획득 x1.8", sup8: "패시브: 방어력 +30%", sup9: "패시브: 코스트 +10%·모든 카드 -1",
         discTitle: "면책 조항", start: "! 작전 개시 !",
         disc: "본 작품은 <블루 아카이브>의 비공식 팬 2차 창작물로, NEXON, Nexon Games, Yostar와 무관합니다. 캐릭터 및 세계관의 저작권은 원권리자에게 있습니다. 본 프로젝트의 콘텐츠는 생성형 AI 도구로 제작되거나 보조되었으며, 그 범위는 아트 에셋과 프로그램 코드를 포함하되 이에 국한되지 않습니다. 비상업적 학습 목적 전용. 배경음악: 필드 'Digital Lemonade', 보스전 'Five Armies' (작곡: Kevin MacLeod / incompetech.com). Creative Commons BY 4.0 라이선스 (https://creativecommons.org/licenses/by/4.0/). 총성·폭발 효과음: OpenGameArt (CC0 퍼블릭 도메인).",
         opN1: "미야코",
@@ -5796,7 +5825,14 @@ function drawPanel() {
       ctx.textAlign = "left";
       ctx.font = `italic 900 16px ${UI_FONT}`;
       ctx.fillStyle = UI_NAVY;
-      ctx.fillText(s.label, px + 88, ry + 30);
+      if (s.hintAlways) {          // 贈送造型：已解鎖也照樣顯示解鎖條件那行
+        ctx.fillText(s.label, px + 88, ry + 24);
+        ctx.font = `bold 11px ${UI_FONT}`;
+        ctx.fillStyle = "rgba(43,58,85,.5)";
+        ctx.fillText(s.hintFn ? s.hintFn() : T(s.hint || "hintDefault"), px + 88, ry + 40);
+      } else {
+        ctx.fillText(s.label, px + 88, ry + 30);
+      }
       const bx = px + PW - 150, bw = 108, bh = 32, by = ry + 8;
       slantPath(bx, by, bw, bh, 8);
       ctx.fillStyle = active ? "rgba(62,207,111,.85)" : UI_BLUE;
@@ -6394,12 +6430,13 @@ function panelClickAt(px, py) {        // 面板點擊（滑鼠/觸控共用）
 }
 
 // ---- 探索小地圖（左上；M 切換；離屏預渲染地形）----
-const DASH_META = {"default": {"fw": 240, "fh": 232, "count": 5, "anchor": 0.5292, "feet": 0.9871}, "swim": {"fw": 240, "fh": 254, "count": 5, "anchor": 0.4813, "feet": 0.937}, "shiroko": {"fw": 240, "fh": 243, "count": 5, "anchor": 0.4938, "feet": 0.9588}, "mika": {"fw": 240, "fh": 260, "count": 5, "anchor": 0.4667, "feet": 0.9385}, "momoi": {"fw": 240, "fh": 252, "count": 5, "anchor": 0.4646, "feet": 0.9722}, "yuuka": {"fw": 240, "fh": 255, "count": 5, "anchor": 0.5271, "feet": 0.9922}};
+const DASH_META = {"default": {"fw": 240, "fh": 232, "count": 5, "anchor": 0.5292, "feet": 0.9871}, "swim": {"fw": 240, "fh": 254, "count": 5, "anchor": 0.4813, "feet": 0.937}, "shiroko": {"fw": 240, "fh": 243, "count": 5, "anchor": 0.4938, "feet": 0.9588}, "mika": {"fw": 240, "fh": 260, "count": 5, "anchor": 0.4667, "feet": 0.9385}, "momoi": {"fw": 240, "fh": 252, "count": 5, "anchor": 0.4646, "feet": 0.9722}, "yuuka": {"fw": 240, "fh": 255, "count": 5, "anchor": 0.5271, "feet": 0.9922}, "koharu": {"fw": 240, "fh": 204, "count": 5, "anchor": 0.5021, "feet": 0.9069}};
 const DASH_SPRITES = {};
 for (const sk in DASH_META) DASH_SPRITES[sk] = { file: "assets_dash/" + sk + ".png" };
 function dashSpriteFor(skinId) { return DASH_SPRITES[skinId] || DASH_SPRITES.default; }
 const DASH_COLOR = { default: [96,170,255], swim: [120,220,255], conv: [130,235,150],
-  yuuka: [160,110,245], momoi: [255,190,90], mika: [255,150,210], shiroko: [110,235,235] };
+  yuuka: [160,110,245], momoi: [255,190,90], mika: [255,150,210], shiroko: [110,235,235],
+  koharu: [255,140,190] };
 // 沙德威斯坦拖尾漸層：[近角色端, 尾端]，冷→暖強對比、降低藍分量減少紫感
 const DASH_GRAD = {
   default: [[70,200,255],  [255,110,40]],   // 天藍 → 橙紅
@@ -6409,6 +6446,7 @@ const DASH_GRAD = {
   momoi:   [[255,215,70],  [255,60,80]],    // 金黃 → 紅
   yuuka:   [[190,110,255], [255,120,60]],   // 紫 → 橙（保留紫身份、尾端轉暖）
   conv:    [[170,255,90],  [50,215,195]],   // 黃綠 → 青
+  koharu:  [[255,130,190], [255,90,60]],    // 櫻粉 → 橙紅（配粉髮粉光環）
 };
 function silTile(img, rgb) {   // 染色快取：用合成操作上色（不讀像素，file:// 下也不會 tainted-canvas 失敗）
   const key = "_sil" + rgb.join("_");
